@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-//import thiendang.com.iodata.LoadData;
 import thiendang.com.sbjwt.entities.User;
 
 
@@ -18,38 +17,29 @@ public class UserService{
 	public static List<User> listUser = new ArrayList<User>();	
 	
 	static {
-//		try {
-//		    
-//			  FileInputStream fis = new FileInputStream("/home/ddthien/userdata2.txt");
-//			  ObjectInputStream ois = new ObjectInputStream(fis);
-//		    
-//			  User u = (User) ois.readObject();
-//			  
-//			      System.out.println(u.toString());
-//			      System.out.println("id: " + u.getId());
-//			      System.out.println("username: " + u.getUsername());
-//			      System.out.println("password: " + u.getPassword());
-//			      User userThien = new User(u.getId(), u.getUsername(), u.getPassword());
-//			      userThien.setRoles(new String[] { "ROLE_USER" });
-//			      listUser.add(userThien);
-//		    
-//		    
-//		    fis.close();
-//		    ois.close();
-//		  } 
-//		  catch (Exception ex) {
-//		    System.out.println("Read File Error: "+ex);
-//		  }
-		
-		User userKai = new User(1, "kai", "123456");
-		userKai.setRoles(new String[] { "ROLE_ADMIN" });
 
-		User userSena = new User(2, "sena", "123456");
-		userSena.setRoles(new String[] { "ROLE_USER" });
-
-		listUser.add(userKai);
-		listUser.add(userSena);
-		
+		try {
+		    
+			  FileInputStream fis = new FileInputStream("/home/ddthien/userdata2.txt");
+			  ObjectInputStream ois = new ObjectInputStream(fis);
+		    
+			  User u = (User) ois.readObject();
+			  
+			      System.out.println(u.toString());
+			      System.out.println("id: " + u.getId());
+			      System.out.println("username: " + u.getUsername());
+			      System.out.println("password: " + u.getPassword());
+			      User userThien = new User(u.getId(), u.getUsername(), u.getPassword());
+			      userThien.setRoles(new String[] { "ROLE_USER" });
+			      listUser.add(userThien);
+		    
+		    
+		    fis.close();
+		    ois.close();
+		  } 
+		  catch (Exception ex) {
+		    System.out.println("Read File Error: " +ex);
+		  }		
 	}
 
 	public List<User> findAll() {

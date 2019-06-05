@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import thiendang.com.sbjwt.entities.Device;
 import thiendang.com.sbjwt.entities.User;
+import thiendang.com.sbjwt.service.DeviceService;
 import thiendang.com.sbjwt.service.JwtService;
 import thiendang.com.sbjwt.service.UserService;
 
@@ -27,6 +29,14 @@ public class UserRestController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+    private DeviceService deviceService;
+	
+	@RequestMapping(value = "/devices", method = RequestMethod.GET)
+	public ResponseEntity<List<Device>> getAllDevices() {
+		return new ResponseEntity<List<Device>>(deviceService.findAllDevices(), HttpStatus.OK);
+	}
 
 	/* ---------------- GET ALL USER ------------------------ */
 	@RequestMapping(value = "/users", method = RequestMethod.GET)

@@ -2,6 +2,9 @@ package thiendang.com.sbjwt.entities;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+
 public class Device implements Serializable{
 	private String id;
 	private String resource;
@@ -9,7 +12,6 @@ public class Device implements Serializable{
 	private String description;
 	
 	public Device(String id, String resource, String content, String description) {
-		super();
 		this.id = id;
 		this.resource = resource;
 		this.content = content;
