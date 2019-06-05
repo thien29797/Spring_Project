@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 
 import thiendang.com.sbjwt.entities.User;
 
-public class LoadData{
+public class WriteDataUser{
 	
 	private void objectOutputUser() {
 		try {
@@ -17,7 +17,7 @@ public class LoadData{
 		   User u = new User(1, "Thien", "123456");
 		   
 		   oos.writeObject(u);
-		   System.out.println("Load successfully");
+		   System.out.println("Write successfully");
 		   
 		   fos.close();
 		   oos.close();
@@ -26,31 +26,10 @@ public class LoadData{
 			 System.out.println("Write file error: " +ex);
 		 }
 		 
-	}
-	
-//	private void objectOutputData() {
-//		try {
-//		    
-//		   FileOutputStream fos = new FileOutputStream("/home/ddthien/userdata.txt");
-//		   ObjectOutputStream oos = new ObjectOutputStream(fos);
-//		    
-//		   User u[] = {
-//		     new User(1, "Thien", "123456")
-//		    ,new User(2, "Nhat", "123456")
-//		   	};
-//		   
-//		   oos.writeObject(u);
-//		   
-//		   fos.close();
-//		   oos.close();
-//		 } 
-//		 catch (IOException ex) {
-//			 System.out.println("Loi ghi file: " +ex);
-//		 }
-//		 
-//	}
+	}	
+
 	public static void main (String[] args) {
-		LoadData ld = new LoadData();
+		WriteDataUser ld = new WriteDataUser();
 		ld.objectOutputUser();
 	}
 
