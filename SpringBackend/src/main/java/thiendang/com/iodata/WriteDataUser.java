@@ -11,10 +11,12 @@ public class WriteDataUser{
 	private void objectOutputUser() {
 		try {
 		    
-		   FileOutputStream fos = new FileOutputStream("/home/ddthien/userdata2.txt");
+		   FileOutputStream fos = new FileOutputStream("/home/ddthien/userdata.txt");
 		   ObjectOutputStream oos = new ObjectOutputStream(fos);
 		    
-		   User u = new User(1, "Thien", "123456");
+		   User u[] = { new User  (1, "thien", "123456"),
+				   new User  (2, "nhat", "123456")
+		   };
 		   
 		   oos.writeObject(u);
 		   System.out.println("Write successfully");
@@ -27,6 +29,7 @@ public class WriteDataUser{
 		 }
 		 
 	}	
+	
 
 	public static void main (String[] args) {
 		WriteDataUser ld = new WriteDataUser();

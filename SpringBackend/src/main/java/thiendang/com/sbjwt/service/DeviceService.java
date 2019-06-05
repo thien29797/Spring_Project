@@ -14,6 +14,7 @@ import thiendang.com.sbjwt.entities.Device;
 public class DeviceService{
 	
 	public static List<Device> listDevice = new ArrayList<Device>();	
+	private static Device device;
 	
 	static {
 
@@ -23,17 +24,18 @@ public class DeviceService{
 			  
 			  ObjectInputStream ois = new ObjectInputStream(fis);
 		    
-			  Device d =  (Device) ois.readObject();
+			  Device dArr[] =  (Device[]) ois.readObject();
 			  
-			  System.out.println(d.toString());
-		      System.out.println("id: " + d.getId());
-		      System.out.println("resource: " + d.getResource());
-		      System.out.println("content: " + d.getContent());
-		      System.out.println("descrpition: " + d.getDescription());
+			  for (Device d : dArr) {
+//			  System.out.println(d.toString());
+//		      System.out.println("id: " + d.getId());
+//		      System.out.println("resource: " + d.getResource());
+//		      System.out.println("content: " + d.getContent());
+//		      System.out.println("descrpition: " + d.getDescription());
 	    
-		      Device device = new Device(d.getId(), d.getResource(), d.getContent(), d.getDescription());			      
+		      device = new Device(d.getId(), d.getResource(), d.getContent(), d.getDescription());			      
 		      listDevice.add(device);
-		    
+			}
 		    
 		    fis.close();
 		    ois.close();

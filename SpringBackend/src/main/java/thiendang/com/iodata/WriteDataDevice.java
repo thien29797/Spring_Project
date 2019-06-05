@@ -16,13 +16,36 @@ public class WriteDataDevice{
 		   FileOutputStream fos = new FileOutputStream("/home/ddthien/devicedataoff.txt");
 		   ObjectOutputStream oos = new ObjectOutputStream(fos);
 		    
-		   Device d[] = {
-				    new Device("1", "self/diag/flow/<flow id>", "{\n" + 
-				    		"  \"api_info\": {\n" + 
-				    		"       \"api_version_number\": \"1\"\n" + 
-				    		"}", "api_version_number<R>\n" + 
-				    				"RestAPI version")
-				   	};
+		   Device d[] = 
+				    {new Device("1", "self/diag/devices", "[\n" + 
+				    		"“a0e61a30-990b-11e5-8994-feff819cdc9f/”\n" + 
+				    		"]", "List the possible device identifiers\n" + 
+				    				"NOTE: A dual SDI 2110 is represented as 2 devices"),
+				    		new Device("2","self/diag/devices/<device id>",
+				    				"{\n" + 
+				    				"\"id\":\"a0e61a30-990b-11e5-8994-feff819cdc9f\",\n" + 
+				    				"\"node_id\":\"a0e61a30-990b-11e5-8994-feff819cdc9f\",\n" + 
+				    				" \"sdi\":{\n" + 
+				    				"  \"valid\": \"<0-1>\",\n" + 
+				    				"  \"bit_rate\": \"<bitrate>\",\n" + 
+				    				"  \"sampling_format\": \"<sampling_format>\",\n" + 
+				    				"  \"frame_rate\": \"<rate>\",\n" + 
+				    				"  \"video_format\": \"<vid_format>\",\n" + 
+				    				"  \"progressive_scan\": \"<0-1>\",\n" + 
+				    				"  \"payload_video_id\": \"<32bits>\"\n" + 
+				    				"}\n" + 
+				    				"}",
+				    				"id<R>\n" + 
+				    				"Device UUID\n" + 
+				    				"node_id<R>\n" + 
+				    				"Node UUID\n" + 
+				    				"valid<R>\n" + 
+				    				"Is flow valid\n" + 
+				    				"bit_rate<R>\n" + 
+				    				"Video bit rate\n" + 
+				    				"  0- HD\n" + 
+				    				"  1- SD\n" + 
+				    				"  2- 3G")};
 		   
 		   oos.writeObject(d);
 		   System.out.println("Write successfully");
@@ -34,36 +57,12 @@ public class WriteDataDevice{
 			 System.out.println("Write file error: " +ex);
 		 }
 		 
-	}
+	}	
 	
-	private void objectInputDevice() {
-		  try {
-		    
-			  FileInputStream fis = new FileInputStream("/home/ddthien/devicedataoff.txt");
-			  ObjectInputStream ois = new ObjectInputStream(fis);
-		    
-			  Device dArr[] = (Device[]) ois.readObject();
-			  for (Device d : dArr){
-			      System.out.println(d.toString());
-			      System.out.println("id: " + d.getId());
-			      System.out.println("resource: " + d.getResource());
-			      System.out.println("content: " + d.getContent());
-			      System.out.println("descrpition: " + d.getDescription());
-		    }
-		    
-		    fis.close();
-		    ois.close();
-		  } 
-		  catch (Exception ex) {
-		    System.out.println("Read File Error: "+ex);
-		  }
-		 
-	}
-
 	public static void main (String[] args) {
 		WriteDataDevice dv = new WriteDataDevice();
 		dv.objectOutputDevice();
-		dv.objectInputDevice();
+		
 	}
 
 }

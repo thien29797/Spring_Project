@@ -15,24 +15,26 @@ import thiendang.com.sbjwt.entities.User;
 public class UserService{
 	
 	public static List<User> listUser = new ArrayList<User>();	
+	private static User user;
 	
 	static {
 
 		try {
 		    
-			  FileInputStream fis = new FileInputStream("/home/ddthien/userdata2.txt");
+			  FileInputStream fis = new FileInputStream("/home/ddthien/userdata.txt");
 			  ObjectInputStream ois = new ObjectInputStream(fis);
 		    
-			  User u = (User) ois.readObject();
-			  
+			  User uArr[] = (User[]) ois.readObject();
+			  for (User u : uArr){
 			      System.out.println(u.toString());
 			      System.out.println("id: " + u.getId());
 			      System.out.println("username: " + u.getUsername());
 			      System.out.println("password: " + u.getPassword());
-			      User userThien = new User(u.getId(), u.getUsername(), u.getPassword());
-			      userThien.setRoles(new String[] { "ROLE_USER" });
-			      listUser.add(userThien);
-		    
+			      user = new User(u.getId(), u.getUsername(), u.getPassword());
+			      user.setRoles(new String[] { "ROLE_USER" });
+			      listUser.add(user);
+			      
+			  }
 		    
 		    fis.close();
 		    ois.close();
