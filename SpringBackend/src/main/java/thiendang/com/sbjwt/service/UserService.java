@@ -1,7 +1,10 @@
 package thiendang.com.sbjwt.service;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +20,29 @@ public class UserService{
 	public static List<User> listUser = new ArrayList<User>();	
 	private static User user;
 	
-	static {
-
+	private static void objectOutputUser() {
+		try {
+		    
+		   FileOutputStream fos = new FileOutputStream("/home/ddthien/userdata.txt");
+		   ObjectOutputStream oos = new ObjectOutputStream(fos);
+		    
+		   User u[] = { new User  (1, "thien", "123456"),
+				   new User  (2, "nhat", "123456")
+		   };
+		   
+		   oos.writeObject(u);
+		   System.out.println("Write successfully");
+		   
+		   fos.close();
+		   oos.close();
+		 } 
+		 catch (IOException ex) {
+			 System.out.println("Write file error: " +ex);
+		 }
+		 
+	}	
+	
+	private static void objectInputUser() {
 		try {
 		    
 			  FileInputStream fis = new FileInputStream("/home/ddthien/userdata.txt");
@@ -37,7 +61,12 @@ public class UserService{
 		  } 
 		  catch (Exception ex) {
 		    System.out.println("Read File Error: " +ex);
-		  }		
+		  }
+	}
+	
+	static {
+		objectOutputUser();
+		objectInputUser();				
 	}
 
 	public List<User> findAll() {
