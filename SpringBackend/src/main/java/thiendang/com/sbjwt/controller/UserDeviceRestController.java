@@ -25,7 +25,7 @@ import thiendang.com.sbjwt.service.UserService;
 
 @RestController
 @RequestMapping("/rest")
-public class UserRestController {
+public class UserDeviceRestController {
 
 	@Autowired
 	private JwtService jwtService;
@@ -35,12 +35,6 @@ public class UserRestController {
 	
 	@Autowired
     private DeviceService deviceService;
-	
-	/*-----------------GET ALL DEVICES----------------------*/
-	@RequestMapping(value = "/devices", method = RequestMethod.GET)
-	public ResponseEntity<List<Device>> getAllDevices() {
-		return new ResponseEntity<List<Device>>(deviceService.findAllDevices(), HttpStatus.OK);
-	}
 
 	/* ---------------- GET ALL USER ------------------------ */
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
@@ -75,6 +69,7 @@ public class UserRestController {
 		return new ResponseEntity<String>("Deleted!", HttpStatus.OK);
 	}
 
+	/*---------------------LOGIN-----------------------------*/
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<String> login(HttpServletRequest request, @RequestBody User user) {
 		String result = "";
@@ -94,13 +89,48 @@ public class UserRestController {
 		return new ResponseEntity<String>(result, httpStatus);
 	}
 	
+	/*-----------------------LOGOUT----------------------------*/
 	@RequestMapping(value="/logout", method = RequestMethod.GET)
 	public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
-	    org.springframework.security.core.Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    org.springframework.security.core.Authentication auth 
+	    	= SecurityContextHolder.getContext().getAuthentication();
 	    if (auth != null){    
 	        new SecurityContextLogoutHandler().logout(request, response, auth);
 	    }
 	    return "redirect:/login?logout";
+	}
+	
+	/*-----------------GET ALL DEVICES----------------------*/
+	@RequestMapping(value = "/devices", method = RequestMethod.GET)
+	public ResponseEntity<List<Device>> getAllDevices() {
+		return new ResponseEntity<List<Device>>(deviceService.findAllDevices(), HttpStatus.OK);
+	}
+	
+	/*-----------------GET DEVICE BY ID---------------------*/
+	@RequestMapping(value = "/devices/{id}", method = RequestMethod.GET)
+	public ResponseEntity<Object> getDeviceById(@PathVariable String id) {
+		Device device = deviceService.findDeviceById(id);
+		if (device != null) {
+			return new ResponseEntity<Object>(device, HttpStatus.OK);
+		}
+		return new ResponseEntity<Object>("Not Found Device", HttpStatus.NO_CONTENT);
+	}
+	
+	/*------------------CREATE NEW DEVICE---------------------*/
+	@RequestMapping(value = "/devices", method = RequestMethod.POST)
+	public ResponseEntity<String> createDevice(@RequestBody Device device) {
+		if (deviceService.addDevice(device)) {
+			return new ResponseEntity<String>("Created!", HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<String>("Device Existed!", HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	/* ---------------- DELETE DEVICE ------------------------ */
+	@RequestMapping(value = "/devices/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<String> deleteDeviceById(@PathVariable String id) {
+		deviceService.deleteDevice(id);
+		return new ResponseEntity<String>("Deleted!", HttpStatus.OK);
 	}
 
 }

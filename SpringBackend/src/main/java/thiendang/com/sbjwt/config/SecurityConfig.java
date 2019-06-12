@@ -53,13 +53,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/rest/**").access("hasRole('ROLE_ADMIN')")
 				.antMatchers(HttpMethod.DELETE, "/rest/**").access("hasRole('ROLE_ADMIN')").and()
 				.addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class)
-				.exceptionHandling().accessDeniedHandler(customAccessDeniedHandler());
-//		http.logout()                                                                
-//        .logoutUrl("/logout")                                                 
-//        .logoutSuccessUrl("/index")                                           
-//        .logoutSuccessHandler(logoutSuccessHandler)                              
-//        .invalidateHttpSession(true)                                             
-//        .addLogoutHandler(logoutHandler)                                         
-//        .deleteCookies(cookieNamesToClear)  
+				.exceptionHandling().accessDeniedHandler(customAccessDeniedHandler());  
 	}
 }

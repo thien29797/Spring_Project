@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import thiendang.com.sbjwt.entities.Device;
@@ -27,11 +28,6 @@ public class DeviceService{
 			  Device dArr[] =  (Device[]) ois.readObject();
 			  
 			  for (Device d : dArr) {
-//			  System.out.println(d.toString());
-//		      System.out.println("id: " + d.getId());
-//		      System.out.println("resource: " + d.getResource());
-//		      System.out.println("content: " + d.getContent());
-//		      System.out.println("descrpition: " + d.getDescription());
 	    
 		      device = new Device(d.getId(), d.getResource(), d.getContent(), d.getDescription());			      
 		      listDevice.add(device);
@@ -47,6 +43,29 @@ public class DeviceService{
 
 	public List<Device> findAllDevices() {
 		return listDevice;
+	}
+	
+	public Device findDeviceById(String id) {
+		for (Device device : listDevice) {
+			if (device.getId().compareTo(id) == 0) {
+				return device;
+			}
+		}
+		return null;
+	}
+	
+	public boolean addDevice(Device device) {
+		for (Device deviceExist : listDevice) {
+			if (device.getId() == deviceExist.getId() || StringUtils.equals(device.getId(), device.getResource())) {
+				return false;
+			}
+		}
+		listDevice.add(device);
+		return true;
+	}
+	
+	public void deleteDevice(String id) {
+		listDevice.removeIf(user -> device.getId() == id);
 	}
 
 }
