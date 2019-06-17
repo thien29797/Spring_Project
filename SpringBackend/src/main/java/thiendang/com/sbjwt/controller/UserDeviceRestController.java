@@ -4,12 +4,14 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +19,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import thiendang.com.sbjwt.entities.Device;
+import thiendang.com.sbjwt.entities.JwtResponse;
 import thiendang.com.sbjwt.entities.User;
 import thiendang.com.sbjwt.service.DeviceService;
 import thiendang.com.sbjwt.service.JwtService;
 import thiendang.com.sbjwt.service.UserService;
 
-
+@CrossOrigin
 @RestController
 @RequestMapping("/rest")
 public class UserDeviceRestController {
@@ -71,22 +74,27 @@ public class UserDeviceRestController {
 
 	/*---------------------LOGIN-----------------------------*/
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<String> login(HttpServletRequest request, @RequestBody User user) {
+	public ResponseEntity<?> login(@Valid @RequestBody User credentials) {
 		String result = "";
-		HttpStatus httpStatus = null;
-		try {
-			if (userService.checkLogin(user)) {
-				result = jwtService.generateTokenLogin(user.getUsername());
-				httpStatus = HttpStatus.OK;
-			} else {
-				result = "Wrong userId and password";
-				httpStatus = HttpStatus.BAD_REQUEST;
+		
+		System.out.print("user " + credentials);
+//		try {
+			if (userService.checkLogin(credentials)) {
+				result = jwtService.generateTokenLogin(credentials.getUsername());
+				credentials.setRoles(new String[] { "ROLE_USER" });
+				System.out.print("token " + result);
+				return ResponseEntity.ok(new JwtResponse(result,
+					credentials.getUsername(), credentials.getAuthorities()));
 			}
-		} catch (Exception ex) {
-			result = "Server Error";
-			httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-		}
-		return new ResponseEntity<String>(result, httpStatus);
+//		}
+//		catch (Exception ex) {
+//			return ResponseEntity
+//				.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//				.body("Server Error");
+//		}
+		return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body("Wrong userId and password");
 	}
 	
 	/*-----------------------LOGOUT----------------------------*/
