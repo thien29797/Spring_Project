@@ -56,7 +56,7 @@ public class UserDeviceRestController {
 	}
 
 	/* ---------------- CREATE NEW USER ------------------------ */
-	@RequestMapping(value = "/users", method = RequestMethod.POST)
+	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<String> createUser(@RequestBody User user) {
 		if (userService.add(user)) {
 			return new ResponseEntity<String>("Created!", HttpStatus.CREATED);
