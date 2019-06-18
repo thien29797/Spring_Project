@@ -78,20 +78,15 @@ public class UserDeviceRestController {
 		String result = "";
 		
 		System.out.print("user " + credentials);
-//		try {
-			if (userService.checkLogin(credentials)) {
-				result = jwtService.generateTokenLogin(credentials.getUsername());
-				credentials.setRoles(new String[] { "ROLE_USER" });
-				System.out.print("token " + result);
-				return ResponseEntity.ok(new JwtResponse(result,
-					credentials.getUsername(), credentials.getAuthorities()));
-			}
-//		}
-//		catch (Exception ex) {
-//			return ResponseEntity
-//				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//				.body("Server Error");
-//		}
+		if (userService.checkLogin(credentials)) {
+			User user = userService.loadUserByUsername
+				(credentials.getUsername());
+			
+			result = jwtService.generateTokenLogin(user.getUsername());
+			System.out.print("token " + result);
+			return ResponseEntity.ok(new JwtResponse(result,
+				user.getUsername(), user.getAuthorities()));
+		}
 		return ResponseEntity
             .status(HttpStatus.FORBIDDEN)
             .body("Wrong userId and password");
