@@ -104,6 +104,8 @@ public class UserService{
 			if (user.getId() == userExist.getId() || StringUtils.equals(user.getUsername(), userExist.getUsername())) {
 				return false;
 			}
+			
+			
 		}
 		listUser.add(user);
 		return true;
