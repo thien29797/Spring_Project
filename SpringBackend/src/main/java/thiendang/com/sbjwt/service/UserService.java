@@ -66,8 +66,8 @@ public class UserService{
 			    
 				  User uArr[] = (User[]) ois.readObject();
 				  for (User u : uArr){
-				      user = new User(u.getId(), decodeString(u.getUsername()), 
-				    		  decodeString(u.getPassword()));
+				      user = new User(u.getId(), u.getUsername(), 
+				    		  u.getPassword());
 				      user.setRoles(new String[] { "ROLE_ADMIN" });
 				      System.out.println(user);
 				      listUser.add(user);
@@ -124,10 +124,9 @@ public class UserService{
 
 	public boolean checkLogin(User user) throws UnsupportedEncodingException {
 		for (User userExist : listUser) {
-		String pass = encodeString(userExist.getPassword());
-		System.out.println("userExist pass " + pass);
+			System.out.println("userExist " + userExist.toString());
 			if (StringUtils.equals(user.getUsername(), userExist.getUsername())
-					&& StringUtils.equals(user.getPassword(), pass)) {
+					&& StringUtils.equals(user.getPassword(), userExist.getPassword())) {
 				return true;
 			}
 		}
