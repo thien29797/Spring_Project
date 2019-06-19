@@ -60,9 +60,9 @@ public class UserDeviceRestController {
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<String> createUser(@RequestBody User user) {
 		if (userService.add(user)) {
-			return new ResponseEntity<String>("Created!", HttpStatus.CREATED);
+			return new ResponseEntity<String>("User registered successfully!", HttpStatus.OK);
 		} else {
-			return new ResponseEntity<String>("User Existed!", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("Fail -> Username is already taken", HttpStatus.BAD_REQUEST);
 		}
 	}
 
