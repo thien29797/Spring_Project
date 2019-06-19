@@ -1,5 +1,6 @@
 package thiendang.com.sbjwt.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -74,7 +75,7 @@ public class UserDeviceRestController {
 
 	/*---------------------LOGIN-----------------------------*/
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<?> login(@Valid @RequestBody User credentials) {
+	public ResponseEntity<?> login(@Valid @RequestBody User credentials) throws UnsupportedEncodingException {
 		String result = "";
 		
 		System.out.print("user " + credentials);

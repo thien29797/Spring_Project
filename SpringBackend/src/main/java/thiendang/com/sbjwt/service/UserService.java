@@ -122,10 +122,12 @@ public class UserService{
 		return null;
 	}
 
-	public boolean checkLogin(User user) {
+	public boolean checkLogin(User user) throws UnsupportedEncodingException {
 		for (User userExist : listUser) {
+		String pass = encodeString(userExist.getPassword());
+		System.out.println("userExist pass " + pass);
 			if (StringUtils.equals(user.getUsername(), userExist.getUsername())
-					&& StringUtils.equals(user.getPassword(), userExist.getPassword())) {
+					&& StringUtils.equals(user.getPassword(), pass)) {
 				return true;
 			}
 		}
