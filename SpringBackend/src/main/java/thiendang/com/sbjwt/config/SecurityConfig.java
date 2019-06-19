@@ -45,7 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		http.csrf().ignoringAntMatchers("/rest/**");
 
-		http.authorizeRequests().antMatchers("/rest/login**").permitAll();
+		http.authorizeRequests().antMatchers("/rest/login**", "/rest/register**").permitAll();
 
 		http.antMatcher("/rest/**").httpBasic().authenticationEntryPoint(restServicesEntryPoint()).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
