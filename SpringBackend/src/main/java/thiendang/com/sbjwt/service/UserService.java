@@ -101,7 +101,7 @@ public class UserService{
 
 	public boolean add(User user) {
 		for (User userExist : listUser) {
-			if (user.getId() == userExist.getId() || StringUtils.equals(user.getUsername(), userExist.getUsername())) {
+			if (StringUtils.equals(user.getUsername(), userExist.getUsername())) {
 				return false;
 			}
 		}

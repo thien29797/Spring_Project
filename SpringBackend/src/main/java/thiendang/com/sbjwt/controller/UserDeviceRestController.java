@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import thiendang.com.sbjwt.entities.Device;
 import thiendang.com.sbjwt.entities.JwtResponse;
+import thiendang.com.sbjwt.entities.ResponseMessage;
 import thiendang.com.sbjwt.entities.User;
 import thiendang.com.sbjwt.service.DeviceService;
 import thiendang.com.sbjwt.service.JwtService;
@@ -58,11 +59,11 @@ public class UserDeviceRestController {
 
 	/* ---------------- CREATE NEW USER ------------------------ */
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public ResponseEntity<String> createUser(@RequestBody User user) {
+	public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
 		if (userService.add(user)) {
-			return new ResponseEntity<String>("User registered successfully!", HttpStatus.OK);
+			return new ResponseEntity<>(new ResponseMessage("User registered successfully!"), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<String>("Fail -> Username is already taken", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new ResponseMessage("Fail -> Username is already taken"), HttpStatus.BAD_REQUEST);
 		}
 	}
 
