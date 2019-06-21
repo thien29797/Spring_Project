@@ -1,5 +1,7 @@
 package thiendang.com.sbjwt.controller;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,15 +14,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import thiendang.com.sbjwt.entities.Device;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import thiendang.com.sbjwt.entities.DeviceInformation;
+import thiendang.com.sbjwt.entities.DeviceIpconfig;
 import thiendang.com.sbjwt.entities.JwtResponse;
 import thiendang.com.sbjwt.entities.User;
+import thiendang.com.sbjwt.service.DeviceIpconfigService;
 import thiendang.com.sbjwt.service.DeviceService;
 import thiendang.com.sbjwt.service.JwtService;
 import thiendang.com.sbjwt.service.UserService;
@@ -37,7 +45,7 @@ public class UserDeviceRestController {
 	private UserService userService;
 	
 	@Autowired
-    private DeviceService deviceService;
+	private DeviceIpconfigService deviceIpconfigService;
 
 	/* ---------------- GET ALL USER ------------------------ */
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
@@ -103,37 +111,94 @@ public class UserDeviceRestController {
 	    return "redirect:/login?logout";
 	}
 	
-	/*-----------------GET ALL DEVICES----------------------*/
-	@RequestMapping(value = "/devices", method = RequestMethod.GET)
-	public ResponseEntity<List<Device>> getAllDevices() {
-		return new ResponseEntity<List<Device>>(deviceService.findAllDevices(), HttpStatus.OK);
+//	/*-----------------GET ALL DEVICES----------------------*/
+//	@RequestMapping(value = "/devices", method = RequestMethod.GET)
+//	public ResponseEntity<List<Device>> getAllDevices() {
+//		return new ResponseEntity<List<Device>>(deviceService.findAllDevices(), HttpStatus.OK);
+//	}
+//	
+//	/*-----------------GET DEVICE BY ID---------------------*/
+//	@RequestMapping(value = "/devices/{id}", method = RequestMethod.GET)
+//	public ResponseEntity<Object> getDeviceById(@PathVariable String id) {
+//		Device device = deviceService.findDeviceById(id);
+//		if (device != null) {
+//			return new ResponseEntity<Object>(device, HttpStatus.OK);
+//		}
+//		return new ResponseEntity<Object>("Not Found Device", HttpStatus.NO_CONTENT);
+//	}
+//	
+//	/*------------------CREATE NEW DEVICE---------------------*/
+//	@RequestMapping(value = "/devices", method = RequestMethod.POST)
+//	public ResponseEntity<String> createDevice(@RequestBody Device device) {
+//		if (deviceService.addDevice(device)) {
+//			return new ResponseEntity<String>("Created!", HttpStatus.CREATED);
+//		} else {
+//			return new ResponseEntity<String>("Device Existed!", HttpStatus.BAD_REQUEST);
+//		}
+//	}
+//	
+//	/* ---------------- DELETE DEVICE ------------------------ */
+//	@RequestMapping(value = "/devices/{id}", method = RequestMethod.DELETE)
+//	public ResponseEntity<String> deleteDeviceById(@PathVariable String id) {
+//		deviceService.deleteDevice(id);
+//		return new ResponseEntity<String>("Deleted!", HttpStatus.OK);
+//	}
+	
+	/*-------------GET DEVICE INFOMATION----------------------*/
+	@GetMapping(value = "devices/information")
+	@ResponseBody
+	public ResponseEntity<Object> getDevicesInformation() {
+		ObjectMapper mapper = new ObjectMapper();
+        try {
+            DeviceInformation deviceInfo = mapper.readValue(new 
+            		URL("http://10.220.20.205/emsfp/node/v1/self/information"), DeviceInformation.class);
+            System.out.println(deviceInfo);
+            return new ResponseEntity<Object>(deviceInfo, HttpStatus.OK);
+        } catch (IOException e) {            
+            e.printStackTrace();
+            return new ResponseEntity<Object>("NOT FOUND INFORMATION DEVICE", HttpStatus.BAD_REQUEST);
+        }       
 	}
 	
-	/*-----------------GET DEVICE BY ID---------------------*/
-	@RequestMapping(value = "/devices/{id}", method = RequestMethod.GET)
-	public ResponseEntity<Object> getDeviceById(@PathVariable String id) {
-		Device device = deviceService.findDeviceById(id);
-		if (device != null) {
-			return new ResponseEntity<Object>(device, HttpStatus.OK);
+	/*------------GET DEVICE IPCONFIG-------------------------*/
+	@GetMapping(value = "devices/ipconfig")
+	@ResponseBody
+	public ResponseEntity<Object> getDevicesIpconfig() {
+		ObjectMapper mapper1 = new ObjectMapper();
+        try {
+            DeviceIpconfig deviceIp = mapper1.readValue(new 
+            		URL("http://10.220.20.205/emsfp/node/v1/self/ipconfig"), DeviceIpconfig.class);
+            System.out.println(deviceIp);
+            deviceIpconfigService.writeDeviceIpconfig(deviceIp);
+            return new ResponseEntity<Object>(deviceIp, HttpStatus.OK);
+        } catch (IOException e) {            
+            e.printStackTrace();
+            return new ResponseEntity<Object>("NOT FOUND IPCONFIG DEVICE", HttpStatus.BAD_REQUEST);
+        }
+	}
+	
+	/*---------------------CHECK IP-----------------------------*/
+	@RequestMapping(value = "/check-ip/{ip}", method = RequestMethod.GET)
+	public ResponseEntity<Object> checkIPs(@PathVariable String ip) {
+		ObjectMapper mapper1 = new ObjectMapper();
+        try {
+            DeviceIpconfig deviceIp = mapper1.readValue(new 
+            		URL("http://10.220.20.205/emsfp/node/v1/self/ifconfig"), DeviceIpconfig.class);
+            System.out.println(deviceIp);
+            deviceIpconfigService.writeDeviceIpconfig(deviceIp);
+            
+        } catch (IOException e) {            
+            e.printStackTrace();
+            
+        }
+		deviceIpconfigService.readDeviceIpconfig();
+		
+		if (deviceIpconfigService.checkIP(ip) != null) {			
+			return new ResponseEntity<Object>(deviceIpconfigService.checkIP(ip), HttpStatus.OK);
 		}
-		return new ResponseEntity<Object>("Not Found Device", HttpStatus.NO_CONTENT);
-	}
-	
-	/*------------------CREATE NEW DEVICE---------------------*/
-	@RequestMapping(value = "/devices", method = RequestMethod.POST)
-	public ResponseEntity<String> createDevice(@RequestBody Device device) {
-		if (deviceService.addDevice(device)) {
-			return new ResponseEntity<String>("Created!", HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<String>("Device Existed!", HttpStatus.BAD_REQUEST);
+		else {			
+			return new ResponseEntity<Object>("NOT FOUND DEVICE", HttpStatus.NOT_FOUND);
 		}
-	}
-	
-	/* ---------------- DELETE DEVICE ------------------------ */
-	@RequestMapping(value = "/devices/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<String> deleteDeviceById(@PathVariable String id) {
-		deviceService.deleteDevice(id);
-		return new ResponseEntity<String>("Deleted!", HttpStatus.OK);
 	}
 
 }
