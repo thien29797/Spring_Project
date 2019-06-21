@@ -60,6 +60,7 @@ public class UserDeviceRestController {
 	/* ---------------- CREATE NEW USER ------------------------ */
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
+		System.out.println("user " + user.toString());
 		if (userService.add(user)) {
 			return new ResponseEntity<>(new ResponseMessage("User registered successfully!"), HttpStatus.OK);
 		} else {

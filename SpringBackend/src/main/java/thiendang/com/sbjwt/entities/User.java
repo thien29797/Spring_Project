@@ -29,13 +29,7 @@ public class User implements Serializable{
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", roles="
 				+ Arrays.toString(roles) + "]";
 	}
-
-	public User(int id, String username, String password) {
-		this.id = id;
-		this.username = username;
-		this.password = password;
-	}
-
+	
 	public List<GrantedAuthority> getAuthorities() {
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 		for (String role : roles) {
