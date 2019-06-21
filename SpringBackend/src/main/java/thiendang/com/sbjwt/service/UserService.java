@@ -20,7 +20,6 @@ import thiendang.com.sbjwt.entities.User;
 public class UserService{
 	
 	public static List<User> listUser = new ArrayList<User>();	
-	private static User user;
 	
 	//Encode user info
 		public static String encodeString(String text) throws UnsupportedEncodingException{
@@ -41,10 +40,14 @@ public class UserService{
 			    
 			   FileOutputStream fos = new FileOutputStream("/home/ddthien/userdata.txt");
 			   ObjectOutputStream oos = new ObjectOutputStream(fos);
-			    
-			   User u[] = { new User  (1, encodeString("thien"), encodeString("123456")),
-					   new User  (2, encodeString("nhat"), encodeString("123456"))
-			   };
+			   User nhatAdmin = new User();
+			   User thienAdmin = new User();
+			   
+			   nhatAdmin.setUsername(encodeString("nhat"));
+			   nhatAdmin.setPassword(encodeString("123456"));
+			   thienAdmin.setUsername(encodeString("thien"));
+			   thienAdmin.setPassword(encodeString("123456"));
+			   User u[] = { nhatAdmin, thienAdmin };
 			   
 			   oos.writeObject(u);
 			   System.out.println("Write successfully");
@@ -66,8 +69,10 @@ public class UserService{
 			    
 				  User uArr[] = (User[]) ois.readObject();
 				  for (User u : uArr){
-				      user = new User(u.getId(), decodeString(u.getUsername()), 
-				    		  decodeString(u.getPassword()));
+				      User user = new User();
+				      user.setId(u.getId());
+				      user.setUsername(u.getUsername()); 
+				      user.setPassword(u.getPassword());
 				      user.setRoles(new String[] { "ROLE_ADMIN" });
 				      System.out.println(user);
 				      listUser.add(user);
@@ -101,14 +106,24 @@ public class UserService{
 
 	public boolean add(User user) {
 		for (User userExist : listUser) {
+<<<<<<< HEAD
 			if (user.getId() == userExist.getId() || StringUtils.equals(user.getUsername(), 
 					userExist.getUsername())) {
+=======
+			if (StringUtils.equals(user.getUsername(), userExist.getUsername())) {
+>>>>>>> c844b3afb68eb8e88e79f02f821aa7384aaf1c52
 				return false;
 			}
 			
 			
 		}
-		listUser.add(user);
+		User saveUser = new User();
+		
+		saveUser.setUsername(user.getUsername());
+		saveUser.setPassword(user.getPassword());
+		saveUser.setRoles(user.getRoles());
+		System.out.println("Save user: " + saveUser.toString());
+		listUser.add(saveUser);
 		return true;
 	}
 
@@ -125,8 +140,9 @@ public class UserService{
 		return null;
 	}
 
-	public boolean checkLogin(User user) {
+	public boolean checkLogin(User user) throws UnsupportedEncodingException {
 		for (User userExist : listUser) {
+			System.out.println("userExist " + userExist.toString());
 			if (StringUtils.equals(user.getUsername(), userExist.getUsername())
 					&& StringUtils.equals(user.getPassword(), userExist.getPassword())) {
 				return true;

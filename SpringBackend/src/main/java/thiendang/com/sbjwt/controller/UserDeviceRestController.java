@@ -1,7 +1,11 @@
 package thiendang.com.sbjwt.controller;
 
+<<<<<<< HEAD
 import java.io.IOException;
 import java.net.URL;
+=======
+import java.io.UnsupportedEncodingException;
+>>>>>>> c844b3afb68eb8e88e79f02f821aa7384aaf1c52
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import thiendang.com.sbjwt.entities.DeviceInformation;
 import thiendang.com.sbjwt.entities.DeviceIpconfig;
 import thiendang.com.sbjwt.entities.JwtResponse;
+import thiendang.com.sbjwt.entities.ResponseMessage;
 import thiendang.com.sbjwt.entities.User;
 import thiendang.com.sbjwt.service.DeviceIpconfigService;
 import thiendang.com.sbjwt.service.DeviceService;
@@ -64,12 +69,13 @@ public class UserDeviceRestController {
 	}
 
 	/* ---------------- CREATE NEW USER ------------------------ */
-	@RequestMapping(value = "/users", method = RequestMethod.POST)
-	public ResponseEntity<String> createUser(@RequestBody User user) {
+	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
+		System.out.println("user " + user.toString());
 		if (userService.add(user)) {
-			return new ResponseEntity<String>("Created!", HttpStatus.CREATED);
+			return new ResponseEntity<>(new ResponseMessage("User registered successfully!"), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<String>("User Existed!", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new ResponseMessage("Fail -> Username is already taken"), HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -82,7 +88,7 @@ public class UserDeviceRestController {
 
 	/*---------------------LOGIN-----------------------------*/
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<?> login(@Valid @RequestBody User credentials) {
+	public ResponseEntity<?> login(@Valid @RequestBody User credentials) throws UnsupportedEncodingException {
 		String result = "";
 		
 		System.out.print("user " + credentials);
