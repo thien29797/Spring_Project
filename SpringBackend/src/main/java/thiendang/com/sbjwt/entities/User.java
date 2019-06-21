@@ -15,13 +15,31 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonIgnoreProperties(value = { "roles", "authorities" })
 
 public class User implements Serializable{
+	public static int idInit = 0;
 	private int id;
 	private String username;
 	private String password;
 	private String[] roles;
 
 	public User() {
-		super();
+		id = ++idInit;
+		username = "";
+		password = "";
+		roles = new String[] {};
+	}
+	
+	public User(String username, String password) {
+		id = ++idInit;
+		this.username = username;
+		this.password = password;
+		roles = new String[] {};
+	}
+	
+	public User(int id, String username, String password, String[] roles) {
+		this.id= id;
+		this.username = username;
+		this.password = password;
+		this.roles = roles;
 	}
 
 	@Override

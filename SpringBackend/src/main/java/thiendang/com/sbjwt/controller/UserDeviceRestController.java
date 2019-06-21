@@ -59,9 +59,9 @@ public class UserDeviceRestController {
 
 	/* ---------------- CREATE NEW USER ------------------------ */
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
-		System.out.println("user " + user.toString());
-		if (userService.add(user)) {
+	public ResponseEntity<?> createUser(@Valid @RequestBody User signUpInput) {
+		System.out.println("user " + signUpInput.toString());
+		if (userService.add(signUpInput)) {
 			return new ResponseEntity<>(new ResponseMessage("User registered successfully!"), HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(new ResponseMessage("Fail -> Username is already taken"), HttpStatus.BAD_REQUEST);

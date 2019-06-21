@@ -40,15 +40,9 @@ public class UserService{
 			    
 			   FileOutputStream fos = new FileOutputStream("/home/ddthien/userdata.txt");
 			   ObjectOutputStream oos = new ObjectOutputStream(fos);
-			   User nhatAdmin = new User();
-			   User thienAdmin = new User();
-			   
-			   nhatAdmin.setUsername(encodeString("nhat"));
-			   nhatAdmin.setPassword(encodeString("123456"));
-			   thienAdmin.setUsername(encodeString("thien"));
-			   thienAdmin.setPassword(encodeString("123456"));
-			   User u[] = { nhatAdmin, thienAdmin };
-			   
+			   User u[] = { new User(encodeString("nhat"),
+					   encodeString("123456")), new User(encodeString("thien"),
+					   encodeString("123456")) };
 			   oos.writeObject(u);
 			   System.out.println("Write successfully");
 			   
@@ -63,20 +57,16 @@ public class UserService{
 		
 		private static void objectInputUser() {
 			try {
-			    
 				  FileInputStream fis = new FileInputStream("/home/ddthien/userdata.txt");
 				  ObjectInputStream ois = new ObjectInputStream(fis);
 			    
 				  User uArr[] = (User[]) ois.readObject();
 				  for (User u : uArr){
-				      User user = new User();
-				      user.setId(u.getId());
-				      user.setUsername(u.getUsername()); 
-				      user.setPassword(u.getPassword());
-				      user.setRoles(new String[] { "ROLE_ADMIN" });
-				      System.out.println(user);
-				      listUser.add(user);
+				      User user = new User(u.getId(), u.getUsername(),
+				    		  u.getPassword(), new String[] { "ROLE_ADMIN" });
 				      
+				      System.out.println(user);
+				      listUser.add(user);  
 				  }
 			    
 			    fis.close();
@@ -110,13 +100,8 @@ public class UserService{
 				return false;
 			}
 		}
-		User saveUser = new User();
-		
-		saveUser.setUsername(user.getUsername());
-		saveUser.setPassword(user.getPassword());
-		saveUser.setRoles(user.getRoles());
-		System.out.println("Save user: " + saveUser.toString());
-		listUser.add(saveUser);
+		listUser.add(user);
+		System.out.println("save user " + user.toString());
 		return true;
 	}
 
