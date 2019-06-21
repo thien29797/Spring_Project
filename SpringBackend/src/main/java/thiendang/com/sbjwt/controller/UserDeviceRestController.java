@@ -1,11 +1,9 @@
 package thiendang.com.sbjwt.controller;
 
-<<<<<<< HEAD
+
 import java.io.IOException;
-import java.net.URL;
-=======
 import java.io.UnsupportedEncodingException;
->>>>>>> c844b3afb68eb8e88e79f02f821aa7384aaf1c52
+import java.net.URL;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +32,6 @@ import thiendang.com.sbjwt.entities.JwtResponse;
 import thiendang.com.sbjwt.entities.ResponseMessage;
 import thiendang.com.sbjwt.entities.User;
 import thiendang.com.sbjwt.service.DeviceIpconfigService;
-import thiendang.com.sbjwt.service.DeviceService;
 import thiendang.com.sbjwt.service.JwtService;
 import thiendang.com.sbjwt.service.UserService;
 

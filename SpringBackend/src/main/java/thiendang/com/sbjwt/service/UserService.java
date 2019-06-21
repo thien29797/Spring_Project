@@ -106,12 +106,12 @@ public class UserService{
 
 	public boolean add(User user) {
 		for (User userExist : listUser) {
-<<<<<<< HEAD
+
 			if (user.getId() == userExist.getId() || StringUtils.equals(user.getUsername(), 
 					userExist.getUsername())) {
-=======
+
 			if (StringUtils.equals(user.getUsername(), userExist.getUsername())) {
->>>>>>> c844b3afb68eb8e88e79f02f821aa7384aaf1c52
+
 				return false;
 			}
 			
@@ -124,6 +124,8 @@ public class UserService{
 		saveUser.setRoles(user.getRoles());
 		System.out.println("Save user: " + saveUser.toString());
 		listUser.add(saveUser);
+		
+	}
 		return true;
 	}
 
