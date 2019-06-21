@@ -12,12 +12,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import thiendang.com.sbjwt.entities.Device;
+import thiendang.com.sbjwt.entities.DeviceInformation;
 
 
 @Service
 public class DeviceService{
 	
-	public static List<Device> listDevice = new ArrayList<Device>();	
+	public static List<Device> listDevice = new ArrayList<Device>();
+	public static List<DeviceInformation> listDeviceInput = new ArrayList<DeviceInformation>();
 	private static Device device;
 	
 	private static void objectOutputDevice() {
@@ -123,5 +125,19 @@ public class DeviceService{
 	public void deleteDevice(String id) {
 		listDevice.removeIf(user -> device.getId() == id);
 	}
-
+	
+	public boolean addDeviceInput(DeviceInformation device) {
+		for (DeviceInformation deviceExist : listDeviceInput) {
+//			if (device.getCurrent_version() == deviceExist.getId() || StringUtils.equals(device.getId(), 
+//					device.getResource())) {
+//				return false;
+//			}
+		}
+		listDeviceInput.add(device);
+		return true;
+	}
+	
+	public List<DeviceInformation> findAllDevicesInput() {
+		return listDeviceInput;
+	}
 }
