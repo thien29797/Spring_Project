@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import thiendang.com.entities.input.LogInInput;
+import thiendang.com.entities.input.UserInput;
 import thiendang.com.sbjwt.entities.DeviceInformation;
 import thiendang.com.sbjwt.entities.DeviceIpconfig;
 import thiendang.com.sbjwt.entities.JwtResponse;
@@ -67,7 +69,7 @@ public class UserDeviceRestController {
 
 	/* ---------------- CREATE NEW USER ------------------------ */
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public ResponseEntity<?> createUser(@Valid @RequestBody User signUpInput) {
+	public ResponseEntity<?> createUser(@Valid @RequestBody UserInput signUpInput) {
 		System.out.println("user " + signUpInput.toString());
 		if (userService.add(signUpInput)) {
 			return new ResponseEntity<>(new ResponseMessage("User registered successfully!"), HttpStatus.OK);
@@ -85,10 +87,10 @@ public class UserDeviceRestController {
 
 	/*---------------------LOGIN-----------------------------*/
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<?> login(@Valid @RequestBody User credentials) throws UnsupportedEncodingException {
+	public ResponseEntity<?> login(@Valid @RequestBody LogInInput credentials) throws UnsupportedEncodingException {
 		String result = "";
 		
-		System.out.print("user " + credentials);
+		System.out.print("logininput " + credentials);
 		if (userService.checkLogin(credentials)) {
 			User user = userService.loadUserByUsername
 				(credentials.getUsername());

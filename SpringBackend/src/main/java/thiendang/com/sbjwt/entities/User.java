@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonIgnoreProperties(value = { "roles", "authorities" })
+@JsonIgnoreProperties(value = { "roles", "authorities" })
 
 public class User implements Serializable{
 	public static int idInit = 0;

@@ -13,6 +13,8 @@ import org.apache.axis.encoding.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import thiendang.com.entities.input.LogInInput;
+import thiendang.com.entities.input.UserInput;
 import thiendang.com.sbjwt.entities.User;
 
 
@@ -94,12 +96,17 @@ public class UserService{
 		return null;
 	}
 
-	public boolean add(User user) {
-		for (User userExist : listUser) {
-			if (StringUtils.equals(user.getUsername(), userExist.getUsername())) {
+	public boolean add(UserInput userInput) {
+		for (User user : listUser) {
+			if (StringUtils.equals(userInput.getUsername(), user.getUsername())) {
 				return false;
 			}
 		}
+		User user = new User();
+		
+		user.setUsername(userInput.getUsername());
+		user.setPassword(userInput.getPassword());
+		user.setRoles(userInput.getRoles());
 		listUser.add(user);
 		System.out.println("save user " + user.toString());
 		return true;
@@ -118,11 +125,11 @@ public class UserService{
 		return null;
 	}
 
-	public boolean checkLogin(User user) throws UnsupportedEncodingException {
-		for (User userExist : listUser) {
-			System.out.println("userExist " + userExist.toString());
-			if (StringUtils.equals(user.getUsername(), userExist.getUsername())
-					&& StringUtils.equals(user.getPassword(), userExist.getPassword())) {
+	public boolean checkLogin(LogInInput logInInput) throws UnsupportedEncodingException {
+		for (User user : listUser) {
+			System.out.println("user " + user.toString());
+			if (StringUtils.equals(logInInput.getUsername(), user.getUsername())
+					&& StringUtils.equals(logInInput.getPassword(), user.getPassword())) {
 				return true;
 			}
 		}
