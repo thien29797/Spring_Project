@@ -5,21 +5,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import thiendang.com.sbjwt.entities.DeviceInformation;
 import thiendang.com.sbjwt.entities.DeviceIpconfig;
+import thiendang.com.sbjwt.interfaces.URLDataInterface;
 
 @Service
-public class DeviceIpconfigService {
+public class DeviceIpconfigService implements URLDataInterface {
 	
 	public static ArrayList<DeviceIpconfig> listIP = new ArrayList<DeviceIpconfig>();
 	public DeviceIpconfig deviceIP;
-	public DeviceInformation deviceInfo;
-	
-	public static void writeDeviceIpconfig(Object deviceIP) {
+
+	public void writeDeviceIpconfig(Object deviceIP) {
 		try {
 		    
 		   FileOutputStream fos = new FileOutputStream("/home/ddthien/deviceipconfig.txt");
@@ -63,40 +66,15 @@ public class DeviceIpconfigService {
 		  }
 		return deviceIP;
 	}
-	
-		
-	public DeviceIpconfig checkIP(String ip) {		
+
+	@Override
+	public Object getDataURL(String ip) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		DeviceIpconfig deviceIpconfig = mapper.readValue(new
+				URL("http://" + ip + "/emsfp/node/v1/self/ipconfig"), DeviceIpconfig.class);
 		System.out.println();
-		
-		String mainIP = ip.substring(0, ip.lastIndexOf(".")).trim();
-		System.out.println("Main IP: " + mainIP);
-		
-		String subIP = ip.substring(ip.lastIndexOf(".") + 1, ip.length()).trim();
-		System.out.println("Sub IP: " +subIP);
-		
-		int startNumber = Integer.valueOf(subIP.substring(0, subIP.indexOf("-")).trim());
-		System.out.printf("\nStart number: %d", startNumber);
-		int lastNumber = Integer.valueOf(subIP.substring(subIP.indexOf("-") +1).trim());
-		System.out.printf("\nLast number: %d", lastNumber);
-		DeviceIpconfig device = null;
-		
-		for (int i = startNumber; i <= lastNumber; i++) {
-			String ipCom = mainIP + "." + String.valueOf(i);
-			System.out.printf("\nIP %d: %s", i, ipCom);
-			
-			
-				if (ipCom.compareTo(deviceIP.getIp_addr()) == 0) {
-					
-					System.out.println("\nIP: " +deviceIP.getIp_addr());
-					device = deviceIP;
-					
-					
-				}
-				
-				
-			
-		}
-		return device;
-		
+		System.out.println(deviceIpconfig);
+		return deviceIpconfig;
 	}
+
 }
