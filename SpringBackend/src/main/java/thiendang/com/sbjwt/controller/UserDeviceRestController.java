@@ -54,7 +54,9 @@ public class UserDeviceRestController {
 	/* ---------------- GET ALL USER ------------------------ */
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
 	public ResponseEntity<List<User>> getAllUser() {
-		return new ResponseEntity<List<User>>(userService.findAll(), HttpStatus.OK);
+		List<User> users = userService.findAll();
+		System.out.println("list users " + users.toString());
+		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
 	}
 
 	/* ---------------- GET USER BY ID ------------------------ */
