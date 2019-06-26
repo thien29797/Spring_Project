@@ -16,71 +16,74 @@ import org.springframework.stereotype.Service;
 import thiendang.com.entities.input.LogInInput;
 import thiendang.com.entities.input.UserInput;
 import thiendang.com.sbjwt.entities.User;
+import thiendang.com.sbjwt.interfaces.DataProcessingInterface;
 
 
 @Service
-public class UserService{
+public class UserService {
 	
 	public static List<User> listUser = new ArrayList<User>();	
 	
 	//Encode user info
-		public static String encodeString(String text) throws UnsupportedEncodingException{
-			byte[] bytes = text.getBytes();
-			String encodeString = Base64.encode(bytes);
-			return encodeString;
-		}
+	public static String encodeString(String text) throws UnsupportedEncodingException{
+		byte[] bytes = text.getBytes();
+		String encodeString = Base64.encode(bytes);
+		return encodeString;
+	}
 		
-		//Decode user info
-		public static String decodeString(String encodeString) throws UnsupportedEncodingException {
-			byte[] decodeBytes = Base64.decode(encodeString);
-			String str = new String(decodeBytes);
-			return str;
-		}
-		
-		private static void objectOutputUser() {
-			try {
-			    
-			   FileOutputStream fos = new FileOutputStream("/home/ddthien/userdata.txt");
-			   ObjectOutputStream oos = new ObjectOutputStream(fos);
-			   User u[] = { new User(encodeString("nhat"),
-					   encodeString("123456")), new User(encodeString("thien"),
-					   encodeString("123456")) };
-			   oos.writeObject(u);
-			   System.out.println("Write successfully");
-			   
-			   fos.close();
-			   oos.close();
-			 } 
-			 catch (IOException ex) {
-				 System.out.println("Write file error: " +ex);
-			 }
+	//Decode user info
+	public static String decodeString(String encodeString) throws UnsupportedEncodingException {
+		byte[] decodeBytes = Base64.decode(encodeString);
+		String str = new String(decodeBytes);
+		return str;
+	}
+
+	// Write User object into local stored
+	private static void objectOutputUser() {
+		try {
+
+		   FileOutputStream fos = new FileOutputStream("/home/ddthien/userdata.txt");
+		   ObjectOutputStream oos = new ObjectOutputStream(fos);
+		   User u[] = { new User(encodeString("nhat"),
+				   encodeString("123456")), new User(encodeString("thien"),
+				   encodeString("123456")) };
+		   oos.writeObject(u);
+		   System.out.println("Write successfully");
+
+		   fos.close();
+		   oos.close();
+		 }
+		 catch (IOException ex) {
+			 System.out.println("Write file error: " +ex);
+		 }
 			 
-		}	
-		
-		private static void objectInputUser() {
-			try {
-				  FileInputStream fis = new FileInputStream("/home/ddthien/userdata.txt");
-				  ObjectInputStream ois = new ObjectInputStream(fis);
-			    
-				  User uArr[] = (User[]) ois.readObject();
-				  for (User u : uArr){
-				      User user = new User(u.getId(), u.getUsername(),
-				    		  u.getPassword(), new String[] { "ROLE_ADMIN" });
-				      
-				      System.out.println(user);
-				      listUser.add(user);  
-				  }
-			    
-			    fis.close();
-			    ois.close();
-			  } 
-			  catch (Exception ex) {
-			    System.out.println("Read File Error: " +ex);
+	}
+
+	// Read user object from local stored
+	private static void objectInputUser() {
+		try {
+			  FileInputStream fis = new FileInputStream("/home/ddthien/userdata.txt");
+			  ObjectInputStream ois = new ObjectInputStream(fis);
+
+			  User uArr[] = (User[]) ois.readObject();
+			  for (User u : uArr){
+			      User user = new User(u.getId(), decodeString(u.getUsername()),
+			    		  decodeString(u.getPassword()), new String[] { "ROLE_ADMIN" });
+
+			      System.out.println(user);
+			      listUser.add(user);
 			  }
-		}	
+			    
+		    fis.close();
+		    ois.close();
+		  }
+		  catch (Exception ex) {
+		    System.out.println("Read File Error: " +ex);
+		  }
+	}
 	static {
 		objectOutputUser();
-		objectInputUser();				
+		objectInputUser();
 	}
 
 	public List<User> findAll() {
@@ -135,4 +138,5 @@ public class UserService{
 		}
 		return false;
 	}
+
 }
