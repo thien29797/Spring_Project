@@ -67,8 +67,8 @@ public class UserService {
 
 			  User uArr[] = (User[]) ois.readObject();
 			  for (User u : uArr){
-			      User user = new User(u.getId(), decodeString(u.getUsername()),
-			    		  decodeString(u.getPassword()), new String[] { "ROLE_ADMIN" });
+			      User user = new User(u.getId(), u.getUsername(),
+			    		  u.getPassword(), new String[] { "ROLE_ADMIN" });
 
 			      System.out.println(user);
 			      listUser.add(user);
