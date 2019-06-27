@@ -123,66 +123,55 @@ public class UserDeviceRestController {
 	    }
 	    return "redirect:/login?logout";
 	}
-	
-//	/*-----------------GET ALL DEVICES----------------------*/
-//	@RequestMapping(value = "/devices", method = RequestMethod.GET)
-//	public ResponseEntity<List<Device>> getAllDevices() {
-//		return new ResponseEntity<List<Device>>(deviceService.findAllDevices(), HttpStatus.OK);
-//	}
-//	
-//	/*-----------------GET DEVICE BY ID---------------------*/
-//	@RequestMapping(value = "/devices/{id}", method = RequestMethod.GET)
-//	public ResponseEntity<Object> getDeviceById(@PathVariable String id) {
-//		Device device = deviceService.findDeviceById(id);
-//		if (device != null) {
-//			return new ResponseEntity<Object>(device, HttpStatus.OK);
-//		}
-//		return new ResponseEntity<Object>("Not Found Device", HttpStatus.NO_CONTENT);
-//	}
-//	
-//	/*------------------CREATE NEW DEVICE---------------------*/
-//	@RequestMapping(value = "/devices", method = RequestMethod.POST)
-//	public ResponseEntity<String> createDevice(@RequestBody Device device) {
-//		if (deviceService.addDevice(device)) {
-//			return new ResponseEntity<String>("Created!", HttpStatus.CREATED);
-//		} else {
-//			return new ResponseEntity<String>("Device Existed!", HttpStatus.BAD_REQUEST);
-//		}
-//	}
-//	
-//	/* ---------------- DELETE DEVICE ------------------------ */
-//	@RequestMapping(value = "/devices/{id}", method = RequestMethod.DELETE)
-//	public ResponseEntity<String> deleteDeviceById(@PathVariable String id) {
-//		deviceService.deleteDevice(id);
-//		return new ResponseEntity<String>("Deleted!", HttpStatus.OK);
-//	}
-	
-	/*-------------GET DEVICE INFORMATION----------------------*/
+
+	/*GET DEVICE IPCONFIG FROM STORE'S COMPUTER*/
+	@RequestMapping(value = "devices/ipconfig", method = RequestMethod.GET)
+	public ResponseEntity<?> getIpconfigData() {
+		DeviceIpconfig deviceIP = (DeviceIpconfig) deviceIpconfigService.readObjectData();
+		if (deviceIP != null)
+			return new ResponseEntity<DeviceIpconfig>(deviceIP, HttpStatus.OK);
+		else
+			return new ResponseEntity<String>("IPCONFIG DATA ARE EMPTY", HttpStatus.NOT_FOUND);
+	}
+
+	/*GET DEVICE INFORMATION FROM STORE'S COMPUTER*/
+	@RequestMapping(value = "devices/information", method = RequestMethod.GET)
+	public ResponseEntity<?> getInformationData() {
+		DeviceInformation deviceInfo = (DeviceInformation) deviceInformationService.readObjectData();
+		if (deviceInfo != null)
+			return new ResponseEntity<DeviceInformation>(deviceInfo, HttpStatus.OK);
+		else
+			return new ResponseEntity<String>("INFORMATION DATA ARE EMPTY", HttpStatus.NOT_FOUND);
+	}
+
+	/*-------------GET AND WRITE DEVICE INFORMATION----------------------*/
 	@RequestMapping(value = "devices/{ip}/information", method = RequestMethod.GET)
 	public ResponseEntity<?> getDevicesInformation(@PathVariable String ip) throws IOException {
-		if (deviceInformationService.getDataURL(ip) != null) {
-			return new ResponseEntity<>((DeviceInformation) deviceInformationService.getDataURL(ip),
-					HttpStatus.OK);
+		DeviceInformation deviceInfo = (DeviceInformation) deviceInformationService.getDataURL(ip);
+		if (deviceInfo != null) {
+			deviceInformationService.writeObjectData(ip);
+			return new ResponseEntity<DeviceInformation>(deviceInfo, HttpStatus.OK);
 		}
 		else {
 			return new ResponseEntity<String>("NOT FOUND INFORMATION DEVICE", HttpStatus.NOT_FOUND);
 		}
 	}
 	
-	/*---------------GET DEVICE IPCONFIG-------------------------*/
+	/*---------------GET AND WRITE DEVICE IPCONFIG-------------------------*/
 	@RequestMapping(value = "devices/{ip}/ipconfig", method = RequestMethod.GET)
 	public ResponseEntity<?> getDevicesIpconfig(@PathVariable String ip) throws IOException {
-		if (deviceIpconfigService.getDataURL(ip) != null) {
-			return new ResponseEntity<DeviceIpconfig>((DeviceIpconfig) deviceIpconfigService.getDataURL(ip),
-					HttpStatus.OK);
+		DeviceIpconfig deviceIp = (DeviceIpconfig) deviceIpconfigService.getDataURL(ip);
+		if (deviceIp != null) {
+			deviceIpconfigService.writeObjectData(ip);
+			return new ResponseEntity<DeviceIpconfig>(deviceIp, HttpStatus.OK);
 		}
 		else {
-			return new ResponseEntity<String>("NOT FOUND IPCONFIG DEVICE",HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("NOT FOUND IPCONFIG DEVICE", HttpStatus.NOT_FOUND);
 		}
 	}
 	
-	/*------------------CHECK IP WITH RANGE_EX: /check-ip/10.220.20.200-255------------*/
-	@RequestMapping(value = "/check-ip/{ip}", method = RequestMethod.GET)
+	/*------------------CHECK IP WITH RANGE_EX: devices/check-ip/10.220.20.200-255------------*/
+	@RequestMapping(value = "devices/check-ip/{ip}", method = RequestMethod.GET)
 	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws IOException {
 		if (deviceInformationService.checkIP(ip).isEmpty() == false) {
 			return new ResponseEntity<List<DeviceInformation>>(deviceInformationService.findAllIPsDevice(),
@@ -192,6 +181,15 @@ public class UserDeviceRestController {
 			return new ResponseEntity<String>("NOT FOUND ANY INFORMATION DEVICE WITH THIS RANGE IP",
                     HttpStatus.NOT_FOUND);
 		}
+	}
+
+	/*GET ALL IP ADDRESS DEVICES*/
+	@RequestMapping(value = "/devices/ips", method = RequestMethod.GET)
+	public ResponseEntity<?> getIPsList() {
+		if (deviceInformationService.findAllIPs().isEmpty() == false)
+			return new ResponseEntity<List<String>>(deviceInformationService.findAllIPs(), HttpStatus.OK);
+		else
+			return new ResponseEntity<String>("DEVICE LIST IS EMPTY", HttpStatus.NOT_FOUND);
 	}
 
 }

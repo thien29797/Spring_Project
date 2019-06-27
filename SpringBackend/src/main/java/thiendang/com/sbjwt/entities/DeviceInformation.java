@@ -1,6 +1,8 @@
 package thiendang.com.sbjwt.entities;
 
-public class DeviceInformation {
+import java.io.Serializable;
+
+public class DeviceInformation implements Serializable {
 	private String current_version;
 	private String emsfp_version;
 	private String asic_version;
