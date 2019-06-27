@@ -157,36 +157,38 @@ public class UserDeviceRestController {
 	
 	/*-------------GET DEVICE INFORMATION----------------------*/
 	@RequestMapping(value = "devices/{ip}/information", method = RequestMethod.GET)
-	public ResponseEntity<DeviceInformation> getDevicesInformation(@PathVariable String ip) throws IOException {
-		if (ip != null) {
-			return new ResponseEntity<DeviceInformation>((DeviceInformation) deviceInformationService.getDataURL(ip),
+	public ResponseEntity<?> getDevicesInformation(@PathVariable String ip) throws IOException {
+		if (deviceInformationService.getDataURL(ip) != null) {
+			return new ResponseEntity<>((DeviceInformation) deviceInformationService.getDataURL(ip),
 					HttpStatus.OK);
 		}
 		else {
-			return new ResponseEntity<DeviceInformation>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("NOT FOUND INFORMATION DEVICE", HttpStatus.NOT_FOUND);
 		}
 	}
 	
-	/*------------GET DEVICE IPCONFIG-------------------------*/
+	/*---------------GET DEVICE IPCONFIG-------------------------*/
 	@RequestMapping(value = "devices/{ip}/ipconfig", method = RequestMethod.GET)
-	public ResponseEntity<DeviceIpconfig> getDevicesIpconfig(@PathVariable String ip) throws IOException {
-		if (ip != null) {
+	public ResponseEntity<?> getDevicesIpconfig(@PathVariable String ip) throws IOException {
+		if (deviceIpconfigService.getDataURL(ip) != null) {
 			return new ResponseEntity<DeviceIpconfig>((DeviceIpconfig) deviceIpconfigService.getDataURL(ip),
 					HttpStatus.OK);
 		}
 		else {
-			return new ResponseEntity<DeviceIpconfig>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("NOT FOUND IPCONFIG DEVICE",HttpStatus.NOT_FOUND);
 		}
 	}
 	
-	/*---------------------CHECK IP-----------------------------*/
+	/*------------------CHECK IP WITH RANGE_EX: /check-ip/10.220.20.200-255------------*/
 	@RequestMapping(value = "/check-ip/{ip}", method = RequestMethod.GET)
-	public ResponseEntity<List<DeviceInformation>> checkIPs(@PathVariable String ip) throws IOException {
-		if (deviceInformationService.checkIP(ip) != null) {
-			return new ResponseEntity<List<DeviceInformation>>(deviceInformationService.findAllIPsDevice(), HttpStatus.OK);
+	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws IOException {
+		if (deviceInformationService.checkIP(ip).isEmpty() == false) {
+			return new ResponseEntity<List<DeviceInformation>>(deviceInformationService.findAllIPsDevice(),
+                    HttpStatus.OK);
 		}
 		else {
-			return new ResponseEntity<List<DeviceInformation>>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("NOT FOUND ANY INFORMATION DEVICE WITH THIS RANGE IP",
+                    HttpStatus.NOT_FOUND);
 		}
 	}
 

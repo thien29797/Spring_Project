@@ -19,9 +19,10 @@ import thiendang.com.sbjwt.interfaces.URLDataInterface;
 @Service
 public class DeviceInformationService implements URLDataInterface {
 
-	public static List<DeviceInformation> deviceInfoList = new ArrayList<DeviceInformation>();
-	public DeviceInformation deviceInfo;
-		
+	private static List<DeviceInformation> deviceInfoList = new ArrayList<DeviceInformation>();
+	private DeviceInformation deviceInfo;
+	private ObjectMapper mapper = new ObjectMapper();
+
 	public void writeDeviceInformation(Object deviceIP) {
 		try {
 			    
@@ -64,14 +65,22 @@ public class DeviceInformationService implements URLDataInterface {
 	}
 
 	@Override
-	public Object getDataURL(String ip) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		DeviceInformation deviceIn = mapper.readValue(new
+	public Object getDataURL(String ip) {
+
+		try {
+			DeviceInformation deviceIn = mapper.readValue(new
 					URL("http://" + ip + "/emsfp/node/v1/self/information"), DeviceInformation.class);
-		System.out.println();
-		System.out.println(deviceIn);
-		return deviceIn;
+			System.out.println();
+			System.out.println(deviceIn);
+			deviceInfo = deviceIn;
+		}
+		catch (IOException e) {
+			deviceInfo = null;
+		}
+		return deviceInfo;
 	}
+
+
 			
 	public List<DeviceInformation> checkIP(String ip) {
 		System.out.println();
@@ -91,10 +100,14 @@ public class DeviceInformationService implements URLDataInterface {
 		for (int i = startNumber; i <= lastNumber; i++) {
 			String ipCom = mainIP + "." + String.valueOf(i);
 			System.out.printf("\nIP %d: %s", i, ipCom);
-			try {
-				deviceInfoList.add((DeviceInformation) getDataURL(ipCom));
-			} catch (IOException e) {
-				continue;
+//			try {
+//				device = (DeviceInformation) getDataURL(ipCom);
+//				deviceInfoList.add(device);
+//			} catch (IOException e) {
+//				continue;
+//			}
+			if (getDataURL(ipCom) != null) {
+				deviceInfoList.add(deviceInfo);
 			}
 		}
 		return deviceInfoList;

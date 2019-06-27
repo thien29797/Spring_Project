@@ -91,7 +91,7 @@ public class DeviceInformation {
 	}
 	@Override
 	public String toString() {
-		return "DeviceInput [current_version=" + current_version + ", emsfp_version=" + emsfp_version
+		return "DeviceInformation [current_version=" + current_version + ", emsfp_version=" + emsfp_version
 				+ ", asic_version=" + asic_version + ", sw_shal=" + sw_sha1 + ", type=" + type + ", asic_slot_00="
 				+ asic_slot_00 + ", asic_slot_01=" + asic_slot_01 + ", asic_slot_02=" + asic_slot_02 + ", asic_slot_03="
 				+ asic_slot_03 + ", hw_version=" + hw_version + "]";

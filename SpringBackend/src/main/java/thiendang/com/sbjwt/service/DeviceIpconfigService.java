@@ -17,10 +17,11 @@ import thiendang.com.sbjwt.entities.DeviceIpconfig;
 import thiendang.com.sbjwt.interfaces.URLDataInterface;
 
 @Service
-public class DeviceIpconfigService implements URLDataInterface {
+public class DeviceIpconfigService implements URLDataInterface{
 	
-	public static ArrayList<DeviceIpconfig> listIP = new ArrayList<DeviceIpconfig>();
-	public DeviceIpconfig deviceIP;
+	private static ArrayList<DeviceIpconfig> listIP = new ArrayList<DeviceIpconfig>();
+	private DeviceIpconfig deviceIP;
+	private ObjectMapper mapper = new ObjectMapper();
 
 	public void writeDeviceIpconfig(Object deviceIP) {
 		try {
@@ -68,13 +69,19 @@ public class DeviceIpconfigService implements URLDataInterface {
 	}
 
 	@Override
-	public Object getDataURL(String ip) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		DeviceIpconfig deviceIpconfig = mapper.readValue(new
-				URL("http://" + ip + "/emsfp/node/v1/self/ipconfig"), DeviceIpconfig.class);
-		System.out.println();
-		System.out.println(deviceIpconfig);
-		return deviceIpconfig;
+	public Object getDataURL(String ip) {
+
+		try {
+			DeviceIpconfig deviceIp = mapper.readValue(new
+					URL("http://" + ip + "/emsfp/node/v1/self/ipconfig"), DeviceIpconfig.class);
+			System.out.println();
+			System.out.println(deviceIp);
+			deviceIP = deviceIp;
+		}
+		catch (IOException e) {
+			deviceIP = null;
+		}
+		return deviceIP;
 	}
 
 }
