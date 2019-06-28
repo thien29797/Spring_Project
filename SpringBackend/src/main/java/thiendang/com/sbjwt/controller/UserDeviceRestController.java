@@ -105,7 +105,7 @@ public class UserDeviceRestController {
 			
 			result = jwtService.generateTokenLogin(user.getUsername());
 			System.out.print("token " + result);
-			return ResponseEntity.ok(new JwtResponse(result,
+			return ResponseEntity.ok(new JwtResponse(result, user.getId(),
 				user.getUsername(), user.getAuthorities()));
 		}
 		return ResponseEntity
