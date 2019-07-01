@@ -1,18 +1,28 @@
 package thiendang.com.sbjwt.entities;
 
-import java.io.Serializable;
+import org.codehaus.jackson.map.annotate.JsonView;
+import thiendang.com.sbjwt.views.AbtributesView;
 
-public class DeviceInformation implements Serializable {
+import java.io.Serializable;
+import java.util.function.Supplier;
+public class DeviceInformation implements Serializable, Supplier {
+
+	@JsonView(AbtributesView.Version_Abtribute.class)
 	private String current_version;
 	private String emsfp_version;
 	private String asic_version;
+	private String hw_version;
+
+	@JsonView(AbtributesView.Swshal_Type_Abtribute.class)
 	private String sw_sha1;
 	private String type;
+
+	@JsonView(AbtributesView.AsicSlot_Abtribute.class)
 	private String asic_slot_00;
 	private String asic_slot_01;
 	private String asic_slot_02;
 	private String asic_slot_03;
-	private String hw_version;
+
 	public String getCurrent_version() {
 		return current_version;
 	}
@@ -75,7 +85,7 @@ public class DeviceInformation implements Serializable {
 	}
 	public DeviceInformation(String current_version, String emsfp_version, String asic_version, String sw_shal, String type,
 			String asic_slot_00, String asic_slot_01, String asic_slot_02, String asic_slot_03, String hw_version) {
-		super();
+
 		this.current_version = current_version;
 		this.emsfp_version = emsfp_version;
 		this.asic_version = asic_version;
@@ -98,6 +108,10 @@ public class DeviceInformation implements Serializable {
 				+ asic_slot_00 + ", asic_slot_01=" + asic_slot_01 + ", asic_slot_02=" + asic_slot_02 + ", asic_slot_03="
 				+ asic_slot_03 + ", hw_version=" + hw_version + "]";
 	}
-	
-	
+
+
+	@Override
+	public Object get() {
+		return null;
+	}
 }

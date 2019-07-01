@@ -174,11 +174,11 @@ public class UserDeviceRestController {
 	@RequestMapping(value = "devices/check-ip/{ip}", method = RequestMethod.GET)
 	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws IOException {
 		if (deviceInformationService.checkIP(ip).isEmpty() == false) {
-			return new ResponseEntity<List<DeviceInformation>>(deviceInformationService.findAllIPsDevice(),
+			return new ResponseEntity<>(deviceInformationService.findAllIPsDevice(),
                     HttpStatus.OK);
 		}
 		else {
-			return new ResponseEntity<String>("NOT FOUND ANY INFORMATION DEVICE WITH THIS RANGE IP",
+			return new ResponseEntity<>("NOT FOUND ANY INFORMATION DEVICE WITH THIS RANGE IP",
                     HttpStatus.NOT_FOUND);
 		}
 	}
@@ -190,6 +190,18 @@ public class UserDeviceRestController {
 			return new ResponseEntity<List<String>>(deviceInformationService.findAllIPs(), HttpStatus.OK);
 		else
 			return new ResponseEntity<String>("DEVICE LIST IS EMPTY", HttpStatus.NOT_FOUND);
+	}
+
+	/*GET VERSION DATA FROM DEVICE*/
+	@RequestMapping(value = "/devices/{ip}/version", method = RequestMethod.GET)
+	public ResponseEntity<Object> getVersionData(@PathVariable String ip) {
+		if (deviceInformationService.getOptionalAbtributes(ip) != null) {
+			return new ResponseEntity<>(deviceInformationService.getOptionalAbtributes(ip),
+					HttpStatus.OK);
+		}
+		else {
+			return new ResponseEntity<>("NOT FOUND DATA", HttpStatus.NOT_FOUND);
+		}
 	}
 
 }
