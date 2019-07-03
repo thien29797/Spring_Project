@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,7 +63,7 @@ public class UserDeviceRestController {
 	public ResponseEntity<List<User>> getAllUser() {
 		List<User> users = userService.findAll();
 		System.out.println("list users " + users.toString());
-		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
+		return new ResponseEntity<>(users, HttpStatus.OK);
 	}
 
 	/* ---------------- GET USER BY ID ------------------------ */
@@ -70,9 +71,9 @@ public class UserDeviceRestController {
 	public ResponseEntity<Object> getUserById(@PathVariable int id) {
 		User user = userService.findById(id);
 		if (user != null) {
-			return new ResponseEntity<Object>(user, HttpStatus.OK);
+			return new ResponseEntity<>(user, HttpStatus.OK);
 		}
-		return new ResponseEntity<Object>("Not Found User", HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>("Not Found User", HttpStatus.NO_CONTENT);
 	}
 
 	/* ---------------- CREATE NEW USER ------------------------ */
@@ -90,7 +91,7 @@ public class UserDeviceRestController {
 	@RequestMapping(value = "/users/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> deleteUserById(@PathVariable int id) {
 		userService.delete(id);
-		return new ResponseEntity<String>("Deleted!", HttpStatus.OK);
+		return new ResponseEntity<>("Deleted!", HttpStatus.OK);
 	}
 
 	/*---------------------LOGIN-----------------------------*/
@@ -129,9 +130,9 @@ public class UserDeviceRestController {
 	public ResponseEntity<?> getIpconfigData() {
 		DeviceIpconfig deviceIP = (DeviceIpconfig) deviceIpconfigService.readObjectData();
 		if (deviceIP != null)
-			return new ResponseEntity<DeviceIpconfig>(deviceIP, HttpStatus.OK);
+			return new ResponseEntity<>(deviceIP, HttpStatus.OK);
 		else
-			return new ResponseEntity<String>("IPCONFIG DATA ARE EMPTY", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("IPCONFIG DATA ARE EMPTY", HttpStatus.NOT_FOUND);
 	}
 
 	/*GET DEVICE INFORMATION FROM STORE'S COMPUTER*/
@@ -139,9 +140,9 @@ public class UserDeviceRestController {
 	public ResponseEntity<?> getInformationData() {
 		DeviceInformation deviceInfo = (DeviceInformation) deviceInformationService.readObjectData();
 		if (deviceInfo != null)
-			return new ResponseEntity<DeviceInformation>(deviceInfo, HttpStatus.OK);
+			return new ResponseEntity<>(deviceInfo, HttpStatus.OK);
 		else
-			return new ResponseEntity<String>("INFORMATION DATA ARE EMPTY", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("INFORMATION DATA ARE EMPTY", HttpStatus.NOT_FOUND);
 	}
 
 	/*-------------GET AND WRITE DEVICE INFORMATION----------------------*/
@@ -150,30 +151,32 @@ public class UserDeviceRestController {
 		DeviceInformation deviceInfo = (DeviceInformation) deviceInformationService.getDataURL(ip);
 		if (deviceInfo != null) {
 			deviceInformationService.writeObjectData(ip);
-			return new ResponseEntity<DeviceInformation>(deviceInfo, HttpStatus.OK);
+			return new ResponseEntity<>(deviceInfo, HttpStatus.OK);
 		}
 		else {
-			return new ResponseEntity<String>("NOT FOUND INFORMATION DEVICE", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("NOT FOUND INFORMATION DEVICE", HttpStatus.NOT_FOUND);
 		}
 	}
 	
 	/*---------------GET AND WRITE DEVICE IPCONFIG-------------------------*/
 	@RequestMapping(value = "devices/{ip}/ipconfig", method = RequestMethod.GET)
-	public ResponseEntity<?> getDevicesIpconfig(@PathVariable String ip) throws IOException {
+	public ResponseEntity<?> getDevicesIpconfig(@PathVariable String ip) {
 		DeviceIpconfig deviceIp = (DeviceIpconfig) deviceIpconfigService.getDataURL(ip);
 		if (deviceIp != null) {
 			deviceIpconfigService.writeObjectData(ip);
-			return new ResponseEntity<DeviceIpconfig>(deviceIp, HttpStatus.OK);
+			return new ResponseEntity<>(deviceIp, HttpStatus.OK);
 		}
 		else {
-			return new ResponseEntity<String>("NOT FOUND IPCONFIG DEVICE", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("NOT FOUND IPCONFIG DEVICE", HttpStatus.NOT_FOUND);
 		}
 	}
 	
 	/*------------------CHECK IP WITH RANGE_EX: devices/check-ip/10.220.20.200-255------------*/
 	@RequestMapping(value = "devices/check-ip/{ip}", method = RequestMethod.GET)
-	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws IOException {
-		if (deviceInformationService.checkIP(ip).isEmpty() == false) {
+	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws ExecutionException, InterruptedException {
+
+		List<DeviceInformation> list = deviceInformationService.discoverIP(ip);
+		if (list.isEmpty() == false) {
 			return new ResponseEntity<>(deviceInformationService.findAllIPsDevice(),
                     HttpStatus.OK);
 		}
@@ -187,21 +190,44 @@ public class UserDeviceRestController {
 	@RequestMapping(value = "/devices/ips", method = RequestMethod.GET)
 	public ResponseEntity<?> getIPsList() {
 		if (deviceInformationService.findAllIPs().isEmpty() == false)
-			return new ResponseEntity<List<String>>(deviceInformationService.findAllIPs(), HttpStatus.OK);
+			return new ResponseEntity<>(deviceInformationService.findAllIPs(), HttpStatus.OK);
 		else
-			return new ResponseEntity<String>("DEVICE LIST IS EMPTY", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("DEVICE LIST IS EMPTY", HttpStatus.NOT_FOUND);
 	}
 
-	/*GET VERSION DATA FROM DEVICE*/
+	/*GET VERSION FIELDS FROM DEVICE*/
 	@RequestMapping(value = "/devices/{ip}/version", method = RequestMethod.GET)
-	public ResponseEntity<Object> getVersionData(@PathVariable String ip) {
-		if (deviceInformationService.getOptionalAbtributes(ip) != null) {
-			return new ResponseEntity<>(deviceInformationService.getOptionalAbtributes(ip),
-					HttpStatus.OK);
+	public ResponseEntity<?> getVersionFields(@PathVariable String ip) {
+		Object subDeviceFields = deviceInformationService.getVersionAttributes(ip);
+		if (subDeviceFields != null) {
+			return new ResponseEntity<>(subDeviceFields, HttpStatus.OK);
 		}
 		else {
 			return new ResponseEntity<>("NOT FOUND DATA", HttpStatus.NOT_FOUND);
 		}
 	}
 
+	/*GET SWSHAL AND TYPE FIELDS FROM DEVICE*/
+	@RequestMapping(value = "/devices/{ip}/sw-type", method = RequestMethod.GET)
+	public ResponseEntity<?> getSwTypeFields(@PathVariable String ip) {
+		Object subDeviceFields = deviceInformationService.getSwshalTypeAttributes(ip);
+		if (subDeviceFields != null) {
+			return new ResponseEntity<>(subDeviceFields, HttpStatus.OK);
+		}
+		else {
+			return new ResponseEntity<>("NOT FOUND DATA", HttpStatus.NOT_FOUND);
+		}
+	}
+
+	/*GET ASIC_SLOT FIELDS FROM DEVICE*/
+	@RequestMapping(value = "/devices/{ip}/asicslot", method = RequestMethod.GET)
+	public ResponseEntity<?> getAsicSlotFields(@PathVariable String ip) {
+		Object subDeviceFields = deviceInformationService.getAsicSlotAttributes(ip);
+		if (subDeviceFields != null) {
+			return new ResponseEntity<>(subDeviceFields, HttpStatus.OK);
+		}
+		else {
+			return new ResponseEntity<>("NOT FOUND DATA", HttpStatus.NOT_FOUND);
+		}
+	}
 }

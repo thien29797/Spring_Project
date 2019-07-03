@@ -11,8 +11,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.util.JSONPObject;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.stereotype.Service;
 import java.util.concurrent.*;
 
@@ -20,7 +19,7 @@ import java.util.concurrent.*;
 import thiendang.com.sbjwt.entities.DeviceInformation;
 import thiendang.com.sbjwt.interfaces.DataProcessingInterface;
 import thiendang.com.sbjwt.interfaces.URLDataInterface;
-import thiendang.com.sbjwt.views.AbtributesView;
+import thiendang.com.sbjwt.views.AttributeViews;
 
 @Service
 public class DeviceInformationService implements URLDataInterface, DataProcessingInterface{
@@ -28,31 +27,78 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	private static List<DeviceInformation> deviceInfoList = new ArrayList<DeviceInformation>();
 	private static List<String> deviceIpList = new ArrayList<String>();
 	private DeviceInformation deviceInfo;
-	private Object subAbtributes;
+	private Object subAttributes;
+	private CompletableFuture<Void> future = null;
 	private static ObjectMapper mapper = new ObjectMapper();
 
-	public Object getOptionalAbtributes(String ip) {
-		//mapper.configure(SerializationConfig.Feature.DEFAULT_VIEW_INCLUSION, false);
+	// Get version attributes of device
+	public Object getVersionAttributes(String ip) {
 		DeviceInformation subInfo = (DeviceInformation) getDataURL(ip);
+        String jsonInString;
+        try {
+			// To enable pretty print
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+			// Map version attributes of DeviceInformation into jsonInString
+            jsonInString = mapper
+                    .writerWithView(AttributeViews.Version_Abtribute.class)
+                    .writeValueAsString(subInfo);
+
+            subAttributes = jsonInString;
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return subAttributes;
+	}
+
+	// Get swshal Type attribute of device
+	public Object getSwshalTypeAttributes(String ip) {
+		DeviceInformation subInfo = (DeviceInformation) getDataURL(ip);
+		String jsonInString;
 		try {
-			Object jsonInString =
-					mapper.writerWithView(AbtributesView.Version_Abtribute.class).writeValueAsString(subInfo);
-			subAbtributes = jsonInString;
-			System.out.println(subAbtributes);
+			// To enable pretty print
+			mapper.enable(SerializationFeature.INDENT_OUTPUT);
+			// Map swshal and type attributes of DeviceInformation into jsonInString
+			jsonInString = mapper
+					.writerWithView(AttributeViews.Swshal_Type_Abtribute.class)
+					.writeValueAsString(subInfo);
+
+			subAttributes = jsonInString;
+
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
-		return subAbtributes;
+		return subAttributes;
 	}
 
+	// Get asic_slot attribute of device
+	public Object getAsicSlotAttributes(String ip) {
+		DeviceInformation subInfo = (DeviceInformation) getDataURL(ip);
+		String jsonInString;
+		try {
+			// To enable pretty print
+			mapper.enable(SerializationFeature.INDENT_OUTPUT);
+			// Map asic_slot attributes of DeviceInformation into jsonInString
+			jsonInString = mapper
+					.writerWithView(AttributeViews.AsicSlot_Abtribute.class)
+					.writeValueAsString(subInfo);
+
+			subAttributes = jsonInString;
+
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return subAttributes;
+	}
+
+	// Get json from url of device and map into DeviceInformation class
 	@Override
 	public Object getDataURL(String ip) {
-
 		try {
 			DeviceInformation deviceIn = mapper.readValue(new
 					URL("http://" + ip + "/emsfp/node/v1/self/information"), DeviceInformation.class);
 			System.out.println();
-			System.out.println(deviceIn);
+			System.out.println("getDataURL " + deviceIn);
 			deviceInfo = deviceIn;
 		}
 		catch (IOException e) {
@@ -61,82 +107,67 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 		return deviceInfo;
 	}
 
-	public DeviceInformation getDataURL1(String ip) {
-
-		try {
-			DeviceInformation deviceIn = mapper.readValue(new
-					URL("http://" + ip + "/emsfp/node/v1/self/information"), DeviceInformation.class);
-			System.out.println();
-			System.out.println(deviceIn);
-			deviceInfo = deviceIn;
-		}
-		catch (IOException e) {
-			deviceInfo = null;
-		}
-		return deviceInfo;
-	}
-
-	private void checkOwnIP(String ip) {
+	// Detect the device IP - device information and add into the list
+	private void detect_Add_IP(String ip) {
 		if (getDataURL(ip) != null) {
+			System.out.println("checkOurIP " + deviceInfo);
 			deviceInfoList.add(deviceInfo);
 			deviceIpList.add(ip);
 		}
-		else {
-			deviceInfoList = null;
-			deviceIpList = null;
-		}
 	}
-			
-	public List<DeviceInformation> checkIP(String ip) {
+
+    // Discover our device IP and return the device information list and the device IP list
+	public List<DeviceInformation> discoverIP(String ip) throws ExecutionException, InterruptedException {
+
 		System.out.println();
-			
+
 		String mainIP = ip.substring(0, ip.lastIndexOf(".")).trim();
 		System.out.println("Main IP: " + mainIP);
-			
+
 		String subIP = ip.substring(ip.lastIndexOf(".") + 1, ip.length()).trim();
-		System.out.println("Sub IP: " +subIP);
-			
+		System.out.println("Sub IP: " + subIP);
+
 		int startNumber = Integer.valueOf(subIP.substring(0, subIP.indexOf("-")).trim());
 		System.out.printf("\nStart number: %d", startNumber);
-		int lastNumber = Integer.valueOf(subIP.substring(subIP.indexOf("-") +1).trim());
+
+		int lastNumber = Integer.valueOf(subIP.substring(subIP.indexOf("-") + 1).trim());
 		System.out.printf("\nLast number: %d", lastNumber);
+
 		int sumIPs = lastNumber - startNumber;
-		System.out.printf("\nSum IP: %d",	 +sumIPs);
-		CountDownLatch latch = new CountDownLatch(sumIPs);
+		System.out.printf("\nSum IP: %d", +sumIPs);
 
 		for (int i = startNumber; i <= lastNumber; i++) {
-			String ipCom = mainIP + "." + String.valueOf(i);
+			String ipCom = mainIP + "." + i;
 			System.out.printf("\nIP %d: %s", i, ipCom);
 
-			try {
-				CompletableFuture.supplyAsync(getDataURL1(ipCom)).thenAccept(d1 -> {
-					printData((String) d1);
-					latch.countDown();
-				});
-				latch.await();
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
+			future = CompletableFuture.runAsync(() -> {
+				detect_Add_IP(ipCom);
+				try {
+					TimeUnit.SECONDS.sleep(1);
+				} catch (InterruptedException ie) {
+					throw new IllegalStateException(ie);
+				}
+			});
 		}
+		future.get();
+
 		return deviceInfoList;
 	}
 
-	private static void printData(String data){
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("Synchronously printing "+data);
-	}
-
+	// Get all device IP address
 	public List<String> findAllIPs() {
 		return deviceIpList;
 	}
 
+	// Get all device information
 	public List<DeviceInformation> findAllIPsDevice() {
-			return deviceInfoList;
+	    return deviceInfoList;
+	}
+
+	// Refresh device IP list and device information list
+	public void refreshList() {
+		deviceInfoList = null;
+		deviceIpList = null;
 	}
 
 	@Override

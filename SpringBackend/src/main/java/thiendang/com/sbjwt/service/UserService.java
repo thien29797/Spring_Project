@@ -81,6 +81,7 @@ public class UserService {
 		    System.out.println("Read File Error: " +ex);
 		  }
 	}
+
 	static {
 		objectOutputUser();
 		objectInputUser();

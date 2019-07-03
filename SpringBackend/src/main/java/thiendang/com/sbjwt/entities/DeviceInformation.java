@@ -1,27 +1,44 @@
 package thiendang.com.sbjwt.entities;
 
-import org.codehaus.jackson.map.annotate.JsonView;
-import thiendang.com.sbjwt.views.AbtributesView;
+import com.fasterxml.jackson.annotation.JsonView;
+import thiendang.com.sbjwt.views.AttributeViews;
 
 import java.io.Serializable;
 import java.util.function.Supplier;
+
 public class DeviceInformation implements Serializable, Supplier {
 
-	@JsonView(AbtributesView.Version_Abtribute.class)
+	@JsonView(AttributeViews.Version_Abtribute.class)
 	private String current_version;
-	private String emsfp_version;
-	private String asic_version;
-	private String hw_version;
+    @JsonView(AttributeViews.Version_Abtribute.class)
+    private String emsfp_version;
+    @JsonView(AttributeViews.Version_Abtribute.class)
+    private String asic_version;
+    @JsonView(AttributeViews.Version_Abtribute.class)
+    private String hw_version;
 
-	@JsonView(AbtributesView.Swshal_Type_Abtribute.class)
+	@JsonView(AttributeViews.Swshal_Type_Abtribute.class)
 	private String sw_sha1;
+    @JsonView(AttributeViews.Swshal_Type_Abtribute.class)
 	private String type;
 
-	@JsonView(AbtributesView.AsicSlot_Abtribute.class)
+	@JsonView(AttributeViews.AsicSlot_Abtribute.class)
 	private String asic_slot_00;
+    @JsonView(AttributeViews.AsicSlot_Abtribute.class)
 	private String asic_slot_01;
-	private String asic_slot_02;
-	private String asic_slot_03;
+    @JsonView(AttributeViews.AsicSlot_Abtribute.class)
+    private String asic_slot_02;
+    @JsonView(AttributeViews.AsicSlot_Abtribute.class)
+    private String asic_slot_03;
+
+//    @Override
+//    public String get() {
+//        try{
+//            Thread.sleep(500);
+//        }catch (Exception e){}
+//
+//        return "data";
+//    }
 
 	public String getCurrent_version() {
 		return current_version;
