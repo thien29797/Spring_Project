@@ -30,6 +30,7 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	private Object subAttributes;
 	private CompletableFuture<Void> future = null;
 	private static ObjectMapper mapper = new ObjectMapper();
+	private long startTime, endTime;
 
 	// Get version attributes of device
 	public Object getVersionAttributes(String ip) {
@@ -94,6 +95,7 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	// Get json from url of device and map into DeviceInformation class
 	@Override
 	public Object getDataURL(String ip) {
+		startTime = System.currentTimeMillis();
 		try {
 			DeviceInformation deviceIn = mapper.readValue(new
 					URL("http://" + ip + "/emsfp/node/v1/self/information"), DeviceInformation.class);
@@ -104,6 +106,9 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 		catch (IOException e) {
 			deviceInfo = null;
 		}
+		endTime = System.currentTimeMillis();
+		System.out.println();
+		System.out.println("Execution time: (ms) " + (endTime-startTime));
 		return deviceInfo;
 	}
 
