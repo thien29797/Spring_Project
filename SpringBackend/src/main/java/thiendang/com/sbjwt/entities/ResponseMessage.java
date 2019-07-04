@@ -1,6 +1,7 @@
 package thiendang.com.sbjwt.entities;
 
 public class ResponseMessage {
+
 	private String message;
 
 	public ResponseMessage(String message) {

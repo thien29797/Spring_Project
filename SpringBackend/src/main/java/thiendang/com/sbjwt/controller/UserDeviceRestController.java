@@ -36,10 +36,7 @@ import thiendang.com.sbjwt.entities.DeviceIpconfig;
 import thiendang.com.sbjwt.entities.JwtResponse;
 import thiendang.com.sbjwt.entities.ResponseMessage;
 import thiendang.com.sbjwt.entities.User;
-import thiendang.com.sbjwt.service.DeviceInformationService;
-import thiendang.com.sbjwt.service.DeviceIpconfigService;
-import thiendang.com.sbjwt.service.JwtService;
-import thiendang.com.sbjwt.service.UserService;
+import thiendang.com.sbjwt.service.*;
 
 @CrossOrigin
 @RestController
@@ -51,6 +48,9 @@ public class UserDeviceRestController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private ProcessDataService processDataService;
 	
 	@Autowired
 	private DeviceInformationService deviceInformationService;
@@ -148,10 +148,10 @@ public class UserDeviceRestController {
 	/*-------------GET AND WRITE DEVICE INFORMATION----------------------*/
 	@RequestMapping(value = "devices/{ip}/information", method = RequestMethod.GET)
 	public ResponseEntity<?> getDevicesInformation(@PathVariable String ip) throws IOException {
-		DeviceInformation deviceInfo = (DeviceInformation) deviceInformationService.getDataURL(ip);
+		DeviceInformation deviceInfo = (DeviceInformation) deviceInformationService.processURLData(ip);
 		if (deviceInfo != null) {
-			deviceInformationService.writeObjectData(ip);
-			return new ResponseEntity<>(deviceInfo, HttpStatus.OK);
+			deviceInformationService.writeObjectData(deviceInfo);
+			return new ResponseEntity<>(deviceInformationService.readObjectData(), HttpStatus.OK);
 		}
 		else {
 			return new ResponseEntity<>("NOT FOUND INFORMATION DEVICE", HttpStatus.NOT_FOUND);
@@ -161,7 +161,7 @@ public class UserDeviceRestController {
 	/*---------------GET AND WRITE DEVICE IPCONFIG-------------------------*/
 	@RequestMapping(value = "devices/{ip}/ipconfig", method = RequestMethod.GET)
 	public ResponseEntity<?> getDevicesIpconfig(@PathVariable String ip) {
-		DeviceIpconfig deviceIp = (DeviceIpconfig) deviceIpconfigService.getDataURL(ip);
+		DeviceIpconfig deviceIp = (DeviceIpconfig) deviceIpconfigService.processURLData(ip);
 		if (deviceIp != null) {
 			deviceIpconfigService.writeObjectData(ip);
 			return new ResponseEntity<>(deviceIp, HttpStatus.OK);
@@ -174,7 +174,7 @@ public class UserDeviceRestController {
 	/*------------------CHECK IP WITH RANGE_EX: devices/check-ip/10.220.20.200-255------------*/
 	@RequestMapping(value = "devices/check-ip/{ip}", method = RequestMethod.GET)
 	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws ExecutionException, InterruptedException {
-
+		deviceInformationService.refreshList();
 		List<DeviceInformation> list = deviceInformationService.discoverIP(ip);
 		if (list.isEmpty() == false) {
 			return new ResponseEntity<>(deviceInformationService.findAllIPsDevice(),
@@ -197,10 +197,11 @@ public class UserDeviceRestController {
 
 	/*GET VERSION FIELDS FROM DEVICE*/
 	@RequestMapping(value = "/devices/{ip}/version", method = RequestMethod.GET)
-	public ResponseEntity<?> getVersionFields(@PathVariable String ip) {
-		Object subDeviceFields = deviceInformationService.getVersionAttributes(ip);
-		if (subDeviceFields != null) {
-			return new ResponseEntity<>(subDeviceFields, HttpStatus.OK);
+	public ResponseEntity<?> getVersionFields(@PathVariable String ip) throws IOException {
+		Object versionFieldsObj = deviceInformationService.getVersionAttributes(ip);
+		//processDataService.writeObjectData("/home/ddthien/DeviceVersion.txt", versionFieldsObj);
+		if (versionFieldsObj != null) {
+			return new ResponseEntity<>(versionFieldsObj, HttpStatus.OK);
 		}
 		else {
 			return new ResponseEntity<>("NOT FOUND DATA", HttpStatus.NOT_FOUND);
@@ -210,9 +211,9 @@ public class UserDeviceRestController {
 	/*GET SWSHAL AND TYPE FIELDS FROM DEVICE*/
 	@RequestMapping(value = "/devices/{ip}/sw-type", method = RequestMethod.GET)
 	public ResponseEntity<?> getSwTypeFields(@PathVariable String ip) {
-		Object subDeviceFields = deviceInformationService.getSwshalTypeAttributes(ip);
-		if (subDeviceFields != null) {
-			return new ResponseEntity<>(subDeviceFields, HttpStatus.OK);
+		Object swTypeFieldsObj = deviceInformationService.getSwshalTypeAttributes(ip);
+		if (swTypeFieldsObj != null) {
+			return new ResponseEntity<>(swTypeFieldsObj, HttpStatus.OK);
 		}
 		else {
 			return new ResponseEntity<>("NOT FOUND DATA", HttpStatus.NOT_FOUND);
@@ -222,9 +223,9 @@ public class UserDeviceRestController {
 	/*GET ASIC_SLOT FIELDS FROM DEVICE*/
 	@RequestMapping(value = "/devices/{ip}/asicslot", method = RequestMethod.GET)
 	public ResponseEntity<?> getAsicSlotFields(@PathVariable String ip) {
-		Object subDeviceFields = deviceInformationService.getAsicSlotAttributes(ip);
-		if (subDeviceFields != null) {
-			return new ResponseEntity<>(subDeviceFields, HttpStatus.OK);
+		Object asicSlotFieldsObj = deviceInformationService.getAsicSlotAttributes(ip);
+		if (asicSlotFieldsObj != null) {
+			return new ResponseEntity<>(asicSlotFieldsObj, HttpStatus.OK);
 		}
 		else {
 			return new ResponseEntity<>("NOT FOUND DATA", HttpStatus.NOT_FOUND);

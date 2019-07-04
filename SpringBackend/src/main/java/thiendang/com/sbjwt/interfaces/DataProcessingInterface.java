@@ -1,6 +1,12 @@
 package thiendang.com.sbjwt.interfaces;
 
 public interface DataProcessingInterface {
-    public void writeObjectData(String ip);
-    public Object readObjectData();
+
+    // Export object data to file
+    void writeObjectData(Object obj);
+
+    // Import object data from file
+    Object readObjectData();
+
+
 }

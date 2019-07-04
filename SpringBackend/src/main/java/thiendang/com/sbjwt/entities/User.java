@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonIgnoreProperties(value = {"authorities" })
 
 public class User implements Serializable{
+
 	public static int idInit = 0;
 	private int id;
 	private String username;
@@ -55,7 +56,7 @@ public class User implements Serializable{
 		}
 		return authorities;
 	}
-	
+
 	public int getId() {
 		return id;
 	}

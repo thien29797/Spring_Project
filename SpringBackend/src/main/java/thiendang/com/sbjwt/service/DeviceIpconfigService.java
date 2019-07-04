@@ -25,12 +25,12 @@ public class DeviceIpconfigService implements URLDataInterface, DataProcessingIn
 	private ObjectMapper mapper = new ObjectMapper();
 
 	@Override
-	public void writeObjectData(String ip) {
+	public void writeObjectData(Object deviceIpconfigObj) {
 		try {
 		    
 		   FileOutputStream fos = new FileOutputStream("/home/ddthien/deviceipconfig.txt");
 		   ObjectOutputStream oos = new ObjectOutputStream(fos);
-		   oos.writeObject(getDataURL(ip));
+		   //oos.writeObject(processURLData(ip));
 		   System.out.println("Write successfully");
 		   
 		   fos.close();
@@ -41,6 +41,7 @@ public class DeviceIpconfigService implements URLDataInterface, DataProcessingIn
 		 }
 		 
 	}
+
 
 	@Override
 	public Object readObjectData() {
@@ -65,8 +66,9 @@ public class DeviceIpconfigService implements URLDataInterface, DataProcessingIn
 		return deviceIP;
 	}
 
+	// Get the json data from URL of device and map into the DeviceIpconfig class
 	@Override
-	public Object getDataURL(String ip) {
+	public Object processURLData(String ip) {
 		try {
 			DeviceIpconfig deviceIp = mapper.readValue(new
 					URL("http://" + ip + "/emsfp/node/v1/self/ipconfig"), DeviceIpconfig.class);

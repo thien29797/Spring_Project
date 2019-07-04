@@ -18,7 +18,6 @@ import thiendang.com.entities.input.UserInput;
 import thiendang.com.sbjwt.entities.User;
 import thiendang.com.sbjwt.interfaces.DataProcessingInterface;
 
-
 @Service
 public class UserService {
 	
@@ -38,7 +37,7 @@ public class UserService {
 		return str;
 	}
 
-	// Write User object into local stored
+	// Write User object into local storing
 	private static void objectOutputUser() {
 		try {
 
@@ -48,7 +47,7 @@ public class UserService {
 				   encodeString("123456")), new User(encodeString("thien"),
 				   encodeString("123456")) };
 		   oos.writeObject(u);
-		   System.out.println("Write successfully");
+		   //System.out.println("Write successfully");
 
 		   fos.close();
 		   oos.close();
@@ -59,7 +58,7 @@ public class UserService {
 			 
 	}
 
-	// Read user object from local stored
+	// Read user object from local storing
 	private static void objectInputUser() {
 		try {
 			  FileInputStream fis = new FileInputStream("/home/ddthien/userdata.txt");
@@ -70,7 +69,7 @@ public class UserService {
 			      User user = new User(u.getId(), u.getUsername(),
 			    		  u.getPassword(), new String[] { "ROLE_ADMIN" });
 
-			      System.out.println(user);
+			      //System.out.println(user);
 			      listUser.add(user);
 			  }
 			    
@@ -87,10 +86,12 @@ public class UserService {
 		objectInputUser();
 	}
 
+	// Get all user information
 	public List<User> findAll() {
 		return listUser;
 	}
 
+	// Get user by id
 	public User findById(int id) {
 		for (User user : listUser) {
 			if (user.getId() == id) {
@@ -100,6 +101,7 @@ public class UserService {
 		return null;
 	}
 
+	// Add user into file storing
 	public boolean add(UserInput userInput) {
 		for (User user : listUser) {
 			if (StringUtils.equals(userInput.getUsername(), user.getUsername())) {
@@ -116,10 +118,12 @@ public class UserService {
 		return true;
 	}
 
+	// Delete user in file storing
 	public void delete(int id) {
 		listUser.removeIf(user -> user.getId() == id);
 	}
 
+	// Get user by username
 	public User loadUserByUsername(String username) {
 		for (User user : listUser) {
 			if (user.getUsername().equals(username)) {
@@ -129,6 +133,7 @@ public class UserService {
 		return null;
 	}
 
+	// Check user login
 	public boolean checkLogin(LogInInput logInInput) throws UnsupportedEncodingException {
 		for (User user : listUser) {
 			System.out.println("user " + user.toString());
