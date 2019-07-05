@@ -175,10 +175,9 @@ public class UserDeviceRestController {
 	/*------------------CHECK IP WITH RANGE_EXAMPLE: devices/check-ip/10.220.20.200-255------------*/
 	@RequestMapping(value = "devices/check-ip/{ip}", method = RequestMethod.GET)
 	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws ExecutionException, InterruptedException {
-        deviceInformationService.refreshList();
-		List<DeviceInformation> list = deviceInformationService.discoverIP(ip);
-		if (list.isEmpty() == false) {
-            //deviceInformationService.refreshList();
+        //deviceInformationService.refreshList();
+		List<DeviceInformation> listInformation = deviceInformationService.discoverIP(ip);
+		if (listInformation.isEmpty() == false) {
 			return new ResponseEntity<>(deviceInformationService.findAllIPsDevice(),
                     HttpStatus.OK);
 		}
