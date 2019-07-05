@@ -4,6 +4,7 @@ package thiendang.com.sbjwt.controller;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -171,12 +172,13 @@ public class UserDeviceRestController {
 		}
 	}
 	
-	/*------------------CHECK IP WITH RANGE_EX: devices/check-ip/10.220.20.200-255------------*/
+	/*------------------CHECK IP WITH RANGE_EXAMPLE: devices/check-ip/10.220.20.200-255------------*/
 	@RequestMapping(value = "devices/check-ip/{ip}", method = RequestMethod.GET)
 	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws ExecutionException, InterruptedException {
-		deviceInformationService.refreshList();
+        deviceInformationService.refreshList();
 		List<DeviceInformation> list = deviceInformationService.discoverIP(ip);
 		if (list.isEmpty() == false) {
+            //deviceInformationService.refreshList();
 			return new ResponseEntity<>(deviceInformationService.findAllIPsDevice(),
                     HttpStatus.OK);
 		}
@@ -199,7 +201,7 @@ public class UserDeviceRestController {
 	@RequestMapping(value = "/devices/{ip}/version", method = RequestMethod.GET)
 	public ResponseEntity<?> getVersionFields(@PathVariable String ip) throws IOException {
 		Object versionFieldsObj = deviceInformationService.getVersionAttributes(ip);
-		//processDataService.writeObjectData("/home/ddthien/DeviceVersion.txt", versionFieldsObj);
+		processDataService.writeObjectData("/home/ddthien/DeviceVersion.txt", versionFieldsObj);
 		if (versionFieldsObj != null) {
 			return new ResponseEntity<>(versionFieldsObj, HttpStatus.OK);
 		}

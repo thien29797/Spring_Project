@@ -21,8 +21,8 @@ import thiendang.com.sbjwt.views.AttributeViews;
 @Service
 public class DeviceInformationService implements URLDataInterface, DataProcessingInterface {
 
-	private static List<DeviceInformation> deviceInfoList = new ArrayList<DeviceInformation>();
-	private static List<String> deviceIpList = new ArrayList<String>();
+	private List<DeviceInformation> deviceInfoList = new ArrayList<DeviceInformation>();
+	private List<String> deviceIpList = new ArrayList<String>();
 	private DeviceInformation deviceInfo;
 	private DeviceVersionInformation deviceVers;
 	private Object subAttributes;
@@ -96,7 +96,8 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 		startTime = System.currentTimeMillis();
 		try {
 			DeviceInformation deviceIn = mapper.readValue(new
-					URL("http://" + ip + "/emsfp/node/v1/self/information"), DeviceInformation.class);
+					URL("http://" + ip + "/emsfp/node/v1/self/information"),
+					DeviceInformation.class);
 			System.out.println();
 			System.out.println("getDataURL " + deviceIn);
 			deviceInfo = deviceIn;
@@ -113,7 +114,6 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	// Detect the device IP - device information and add into the deviceInfoList
 	private void detect_Add_IP(String ip) {
 		if (processURLData(ip) != null) {
-			System.out.println("checkOurIP " + deviceInfo);
 			deviceInfoList.add(deviceInfo);
 			deviceIpList.add(ip);
 		}
@@ -121,27 +121,13 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 
 	// Discover device IP and add into the device information list and the device IP list
 	public List<DeviceInformation> discoverIP(String ip) throws ExecutionException, InterruptedException {
-		System.out.println();
-
 		String mainIP = ip.substring(0, ip.lastIndexOf(".")).trim();
-		System.out.println("Main IP: " + mainIP);
-
 		String subIP = ip.substring(ip.lastIndexOf(".") + 1, ip.length()).trim();
-		System.out.println("Sub IP: " + subIP);
-
 		int startNumber = Integer.valueOf(subIP.substring(0, subIP.indexOf("-")).trim());
-		System.out.printf("\nStart number: %d", startNumber);
-
 		int lastNumber = Integer.valueOf(subIP.substring(subIP.indexOf("-") + 1).trim());
-		System.out.printf("\nLast number: %d", lastNumber);
-
-		int sumIPs = lastNumber - startNumber;
-		System.out.printf("\nSum IP: %d", +sumIPs);
-
 		for (int i = startNumber; i <= lastNumber; i++) {
 			String ipCom = mainIP + "." + i;
 			System.out.printf("\nIP %d: %s", i, ipCom);
-
 			future = CompletableFuture.runAsync(() -> {
 				detect_Add_IP(ipCom);
 				try {
@@ -151,10 +137,8 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 				}
 			});
 		}
-		startTime = System.currentTimeMillis();
+
 		future.get();
-		endTime = System.currentTimeMillis();
-		System.out.println("Execution future.get() time: (ms) " + (endTime - startTime));
 		return deviceInfoList;
 	}
 
