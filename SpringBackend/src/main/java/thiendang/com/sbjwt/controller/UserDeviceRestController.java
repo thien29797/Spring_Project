@@ -175,10 +175,10 @@ public class UserDeviceRestController {
 	
 	/*------------------CHECK IP WITH RANGE_EXAMPLE: devices/check-ip/10.220.20.200-255------------*/
 	@RequestMapping(value = "devices/check-ip/{ip}", method = RequestMethod.GET)
-	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws ExecutionException, InterruptedException, TimeoutException {
-        //deviceInformationService.refreshList();
-		List<DeviceInformation> listInformation = deviceInformationService.discoverIP(ip);
-		if (listInformation.isEmpty() == false) {
+	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws ExecutionException, InterruptedException {
+        deviceInformationService.refreshList();
+		List<DeviceInformation> informationList = deviceInformationService.discoverIP(ip);
+		if (informationList.isEmpty() == false) {
 			return new ResponseEntity<>(deviceInformationService.findAllIPsDevice(),
                     HttpStatus.OK);
 		}
@@ -190,47 +190,37 @@ public class UserDeviceRestController {
 
 	/*GET ALL IP ADDRESS DEVICES*/
 	@RequestMapping(value = "/devices/ips", method = RequestMethod.GET)
-	public ResponseEntity<?> getIPsList() {
+	public ResponseEntity<?> getIPsList() throws ExecutionException, InterruptedException {
 		if (deviceInformationService.findAllIPs().isEmpty() == false)
-			return new ResponseEntity<>(deviceInformationService.findAllIPs(), HttpStatus.OK);
+			return new ResponseEntity<>(deviceInformationService.createIPList(), HttpStatus.OK);
 		else
 			return new ResponseEntity<>("DEVICE LIST IS EMPTY", HttpStatus.NOT_FOUND);
 	}
 
-	/*GET VERSION FIELDS FROM DEVICE*/
-	@RequestMapping(value = "/devices/{ip}/version", method = RequestMethod.GET)
-	public ResponseEntity<?> getVersionFields(@PathVariable String ip) throws IOException {
-		Object versionFieldsObj = deviceInformationService.getVersionAttributes(ip);
-		processDataService.writeObjectData("/home/ddthien/DeviceVersion.txt", versionFieldsObj);
-		if (versionFieldsObj != null) {
-			return new ResponseEntity<>(versionFieldsObj, HttpStatus.OK);
+	/*GET FIELDS OF DEVICE INFORMATION*/
+	@RequestMapping(value = "/devices/information/{ip}/{fields}", method = RequestMethod.GET)
+	public ResponseEntity<?> getFieldsDeviceInformation(@PathVariable String ip, @PathVariable String fields) {
+        String fieldAttributes = null;
+        // Compare field title
+        if (fields.compareTo("version") == 0) {
+            fieldAttributes = deviceInformationService.getVersionAttributes(ip);
+        }
+        else if (fields.compareTo("swtype") == 0) {
+            fieldAttributes = deviceInformationService.getSwshalTypeAttributes(ip);
+        }
+        else if (fields.compareTo("asicslot") == 0){
+            fieldAttributes = deviceInformationService.getAsicSlotAttributes(ip);
+        }
+        else {
+            fieldAttributes = null;
+        }
+        // Export attributes
+		if (fieldAttributes != null) {
+			return new ResponseEntity<>(fieldAttributes, HttpStatus.OK);
 		}
 		else {
 			return new ResponseEntity<>("NOT FOUND DATA", HttpStatus.NOT_FOUND);
 		}
 	}
 
-	/*GET SWSHAL AND TYPE FIELDS FROM DEVICE*/
-	@RequestMapping(value = "/devices/{ip}/sw-type", method = RequestMethod.GET)
-	public ResponseEntity<?> getSwTypeFields(@PathVariable String ip) {
-		Object swTypeFieldsObj = deviceInformationService.getSwshalTypeAttributes(ip);
-		if (swTypeFieldsObj != null) {
-			return new ResponseEntity<>(swTypeFieldsObj, HttpStatus.OK);
-		}
-		else {
-			return new ResponseEntity<>("NOT FOUND DATA", HttpStatus.NOT_FOUND);
-		}
-	}
-
-	/*GET ASIC_SLOT FIELDS FROM DEVICE*/
-	@RequestMapping(value = "/devices/{ip}/asicslot", method = RequestMethod.GET)
-	public ResponseEntity<?> getAsicSlotFields(@PathVariable String ip) {
-		Object asicSlotFieldsObj = deviceInformationService.getAsicSlotAttributes(ip);
-		if (asicSlotFieldsObj != null) {
-			return new ResponseEntity<>(asicSlotFieldsObj, HttpStatus.OK);
-		}
-		else {
-			return new ResponseEntity<>("NOT FOUND DATA", HttpStatus.NOT_FOUND);
-		}
-	}
 }

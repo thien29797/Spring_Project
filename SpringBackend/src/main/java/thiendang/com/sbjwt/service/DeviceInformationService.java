@@ -8,6 +8,8 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 import java.util.concurrent.*;
 
@@ -24,15 +26,18 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	private List<DeviceInformation> deviceInfoList = new ArrayList<DeviceInformation>();
 	private List<String> deviceIpList = new ArrayList<String>();
 	private DeviceInformation deviceInfo;
-	private DeviceVersionInformation deviceVers;
-	private Object subAttributes;
+	private String subAttributes;
 	private CompletableFuture<Void> future = null;
 	private ObjectMapper mapper = new ObjectMapper();
 	private long startTime, endTime;
 
+	private Object getDeviceInformation(String ip) {
+		DeviceInformation subInformation = (DeviceInformation) processURLData(ip);
+		return subInformation;
+	}
 	// Get the version attributes of device
-	public Object getVersionAttributes(String ip) {
-		DeviceInformation subInfo = (DeviceInformation) processURLData(ip);
+	public String getVersionAttributes(String ip) {
+		DeviceInformation subInformation = (DeviceInformation) getDeviceInformation(ip);
 		String jsonInString;
 		try {
 			// To enable pretty print
@@ -40,7 +45,7 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 			// Map version attributes of DeviceInformation into jsonInString
 			jsonInString = mapper
 					.writerWithView(AttributeViews.Version_Abtribute.class)
-					.writeValueAsString(subInfo);
+					.writeValueAsString(subInformation);
 
 			subAttributes = jsonInString;
 
@@ -51,8 +56,8 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	}
 
 	// Get the swshal Type attributes of device
-	public Object getSwshalTypeAttributes(String ip) {
-		DeviceInformation subInfo = (DeviceInformation) processURLData(ip);
+	public String getSwshalTypeAttributes(String ip) {
+		DeviceInformation subInfo = (DeviceInformation) getDeviceInformation(ip);
 		String jsonInString;
 		try {
 			// To enable pretty print
@@ -71,8 +76,8 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	}
 
 	// Get the asic_slot attributes of device
-	public Object getAsicSlotAttributes(String ip) {
-		DeviceInformation subInfo = (DeviceInformation) processURLData(ip);
+	public String getAsicSlotAttributes(String ip) {
+		DeviceInformation subInfo = (DeviceInformation) getDeviceInformation(ip);
 		String jsonInString;
 		try {
 			// To enable pretty print
@@ -94,7 +99,8 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	@Override
 	public Object processURLData(String ip) {
 		startTime = System.currentTimeMillis();
-		System.out.println("processURLData IP: "+ ip);
+		System.setProperty("sun.net.client.defaultConnectTimeout", "500");
+		System.setProperty("sun.net.client.defaultReadTimeout", "500");
 		try {
 			DeviceInformation deviceIn = mapper.readValue(new
 					URL("http://" + ip + "/emsfp/node/v1/self/information"),
@@ -113,7 +119,7 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	}
 
 	// Detect the device IP - device information and add into the deviceInfoList
-	private void detect_Add_IP(String ip) {
+	private void detectAddIP(String ip) {
 		if (processURLData(ip) != null) {
 			deviceInfoList.add(deviceInfo);
 			deviceIpList.add(ip);
@@ -121,7 +127,7 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	}
 
 	// Discover device IP and add into the device information list and the device IP list
-	public List<DeviceInformation> discoverIP(String ip) throws ExecutionException, InterruptedException, TimeoutException {
+	public List<DeviceInformation> discoverIP(String ip) throws ExecutionException, InterruptedException{
 		String mainIP = ip.substring(0, ip.lastIndexOf(".")).trim();
 		String subIP = ip.substring(ip.lastIndexOf(".") + 1, ip.length()).trim();
 		int startNumber = Integer.valueOf(subIP.substring(0, subIP.indexOf("-")).trim());
@@ -130,11 +136,24 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 			String ipCom = mainIP + "." + i;
 			System.out.printf("\nIP %d: %s", i, ipCom);
 			future = CompletableFuture.runAsync(() -> {
-				detect_Add_IP(ipCom);
+				detectAddIP(ipCom);
 			});
 		}
 		future.get();
 		return deviceInfoList;
+	}
+
+	public Object createIPList() {
+		ArrayNode arrayNode = mapper.createArrayNode();
+		ObjectNode objectNode = mapper.createObjectNode();
+		for(int i = 0; i < findAllIPs().size(); i++) {
+			objectNode.put("Id", i);
+			objectNode.put("Ip", deviceIpList.get(i));
+			arrayNode.add(objectNode);
+		}
+
+		System.out.println("list "+ arrayNode);
+		return arrayNode;
 	}
 
 	// Get all device IP address
@@ -149,8 +168,8 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 
 	// Refresh device IP list and device information list
 	public void refreshList() {
-		deviceInfoList = null;
-		deviceIpList = null;
+		deviceInfoList.clear();
+		deviceIpList.clear();
 	}
 
 	// Get JSON data from device URL then write object data into deviceinformation.txt file
