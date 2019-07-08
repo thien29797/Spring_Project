@@ -94,12 +94,13 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	@Override
 	public Object processURLData(String ip) {
 		startTime = System.currentTimeMillis();
+		System.out.println("processURLData IP: "+ ip);
 		try {
 			DeviceInformation deviceIn = mapper.readValue(new
 					URL("http://" + ip + "/emsfp/node/v1/self/information"),
 					DeviceInformation.class);
 			System.out.println();
-			System.out.println("getDataURL " + deviceIn);
+			System.out.println(deviceIn);
 			deviceInfo = deviceIn;
 		} catch (IOException e) {
 			deviceInfo = null;
@@ -120,7 +121,7 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	}
 
 	// Discover device IP and add into the device information list and the device IP list
-	public List<DeviceInformation> discoverIP(String ip) throws ExecutionException, InterruptedException {
+	public List<DeviceInformation> discoverIP(String ip) throws ExecutionException, InterruptedException, TimeoutException {
 		String mainIP = ip.substring(0, ip.lastIndexOf(".")).trim();
 		String subIP = ip.substring(ip.lastIndexOf(".") + 1, ip.length()).trim();
 		int startNumber = Integer.valueOf(subIP.substring(0, subIP.indexOf("-")).trim());
@@ -130,14 +131,8 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 			System.out.printf("\nIP %d: %s", i, ipCom);
 			future = CompletableFuture.runAsync(() -> {
 				detect_Add_IP(ipCom);
-				try {
-					TimeUnit.SECONDS.sleep(1);
-				} catch (InterruptedException ie) {
-					throw new IllegalStateException(ie);
-				}
 			});
 		}
-
 		future.get();
 		return deviceInfoList;
 	}

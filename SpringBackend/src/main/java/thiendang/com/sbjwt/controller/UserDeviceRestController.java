@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -174,7 +175,7 @@ public class UserDeviceRestController {
 	
 	/*------------------CHECK IP WITH RANGE_EXAMPLE: devices/check-ip/10.220.20.200-255------------*/
 	@RequestMapping(value = "devices/check-ip/{ip}", method = RequestMethod.GET)
-	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws ExecutionException, InterruptedException {
+	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws ExecutionException, InterruptedException, TimeoutException {
         //deviceInformationService.refreshList();
 		List<DeviceInformation> listInformation = deviceInformationService.discoverIP(ip);
 		if (listInformation.isEmpty() == false) {
