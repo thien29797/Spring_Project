@@ -1,5 +1,5 @@
 
-package thiendang.com.sbjwt.rest;
+package thiendang.com.sbjwt.security;
 
 import java.io.IOException;
 
@@ -17,8 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
-import thiendang.com.sbjwt.service.JwtService;
-import thiendang.com.sbjwt.service.UserService;
+import thiendang.com.sbjwt.service.jwt.JwtService;
+import thiendang.com.sbjwt.service.user.UserService;
 
 public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter {
 

@@ -1,4 +1,4 @@
-package thiendang.com.sbjwt.service;
+package thiendang.com.sbjwt.service.device;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,20 +7,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
-import thiendang.com.sbjwt.entities.DeviceInformation;
 import thiendang.com.sbjwt.entities.DeviceIpconfig;
-import thiendang.com.sbjwt.interfaces.DataProcessingInterface;
-import thiendang.com.sbjwt.interfaces.URLDataInterface;
 
 @Service
 public class DeviceIpconfigService implements URLDataInterface, DataProcessingInterface {
-	
-	private static ArrayList<DeviceIpconfig> listIP = new ArrayList<DeviceIpconfig>();
+
 	private DeviceIpconfig deviceIP;
 	private ObjectMapper mapper = new ObjectMapper();
 

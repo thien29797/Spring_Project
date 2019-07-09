@@ -1,4 +1,4 @@
-package thiendang.com.sbjwt.interfaces;
+package thiendang.com.sbjwt.service.device;
 
 public interface DataProcessingInterface {
 

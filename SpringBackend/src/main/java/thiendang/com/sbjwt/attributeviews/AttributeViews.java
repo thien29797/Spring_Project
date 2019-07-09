@@ -1,4 +1,4 @@
-package thiendang.com.sbjwt.views;
+package thiendang.com.sbjwt.attributeviews;
 
 public class AttributeViews {
     public static class Version_Abtribute {};

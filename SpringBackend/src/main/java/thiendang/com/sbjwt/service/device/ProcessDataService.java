@@ -1,4 +1,4 @@
-package thiendang.com.sbjwt.service;
+package thiendang.com.sbjwt.service.device;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;

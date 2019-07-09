@@ -3,12 +3,8 @@ package thiendang.com.sbjwt.controller;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,17 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import thiendang.com.entities.input.LogInInput;
 import thiendang.com.entities.input.UserInput;
@@ -38,7 +29,11 @@ import thiendang.com.sbjwt.entities.DeviceIpconfig;
 import thiendang.com.sbjwt.entities.JwtResponse;
 import thiendang.com.sbjwt.entities.ResponseMessage;
 import thiendang.com.sbjwt.entities.User;
-import thiendang.com.sbjwt.service.*;
+import thiendang.com.sbjwt.service.device.DeviceInformationService;
+import thiendang.com.sbjwt.service.device.DeviceIpconfigService;
+import thiendang.com.sbjwt.service.device.ProcessDataService;
+import thiendang.com.sbjwt.service.jwt.JwtService;
+import thiendang.com.sbjwt.service.user.UserService;
 
 @CrossOrigin
 @RestController

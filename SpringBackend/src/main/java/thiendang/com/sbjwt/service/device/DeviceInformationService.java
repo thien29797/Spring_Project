@@ -1,4 +1,4 @@
-package thiendang.com.sbjwt.service;
+package thiendang.com.sbjwt.service.device;
 
 import java.io.*;
 import java.net.URL;
@@ -15,10 +15,7 @@ import java.util.concurrent.*;
 
 
 import thiendang.com.sbjwt.entities.DeviceInformation;
-import thiendang.com.sbjwt.entities.DeviceVersionInformation;
-import thiendang.com.sbjwt.interfaces.DataProcessingInterface;
-import thiendang.com.sbjwt.interfaces.URLDataInterface;
-import thiendang.com.sbjwt.views.AttributeViews;
+import thiendang.com.sbjwt.attributeviews.AttributeViews;
 
 @Service
 public class DeviceInformationService implements URLDataInterface, DataProcessingInterface {
@@ -143,16 +140,15 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 		return deviceInfoList;
 	}
 
+	// Create IP list JSON from device IP list
 	public Object createIPList() {
 		ArrayNode arrayNode = mapper.createArrayNode();
-		ObjectNode objectNode = mapper.createObjectNode();
 		for(int i = 0; i < findAllIPs().size(); i++) {
+			ObjectNode objectNode = mapper.createObjectNode();
 			objectNode.put("Id", i);
 			objectNode.put("Ip", deviceIpList.get(i));
 			arrayNode.add(objectNode);
 		}
-
-		System.out.println("list "+ arrayNode);
 		return arrayNode;
 	}
 

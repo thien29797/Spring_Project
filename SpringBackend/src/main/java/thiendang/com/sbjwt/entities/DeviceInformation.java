@@ -1,7 +1,7 @@
 package thiendang.com.sbjwt.entities;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import thiendang.com.sbjwt.views.AttributeViews;
+import thiendang.com.sbjwt.attributeviews.AttributeViews;
 
 import java.io.Serializable;
 
