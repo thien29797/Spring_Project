@@ -26,6 +26,7 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	private String subAttributes;
 	private CompletableFuture<Void> future = null;
 	private ObjectMapper mapper = new ObjectMapper();
+	ArrayNode arrayNode = mapper.createArrayNode();
 	private long startTime, endTime;
 
 	private Object getDeviceInformation(String ip) {
@@ -124,7 +125,8 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 	}
 
 	// Discover device IP and add into the device information list and the device IP list
-	public List<DeviceInformation> discoverIP(String ip) throws ExecutionException, InterruptedException{
+	public List<DeviceInformation> discoverIP(String ip)
+			throws ExecutionException, InterruptedException{
 		String mainIP = ip.substring(0, ip.lastIndexOf(".")).trim();
 		String subIP = ip.substring(ip.lastIndexOf(".") + 1, ip.length()).trim();
 		int startNumber = Integer.valueOf(subIP.substring(0, subIP.indexOf("-")).trim());
@@ -142,7 +144,6 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 
 	// Create IP list JSON from device IP list
 	public Object createIPList() {
-		ArrayNode arrayNode = mapper.createArrayNode();
 		for(int i = 0; i < findAllIPs().size(); i++) {
 			ObjectNode objectNode = mapper.createObjectNode();
 			objectNode.put("Id", i);
@@ -191,6 +192,7 @@ public class DeviceInformationService implements URLDataInterface, DataProcessin
 		}
 		return deviceInfo;
 	}
+
 }
 
 

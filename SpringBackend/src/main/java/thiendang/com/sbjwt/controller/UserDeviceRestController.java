@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -124,7 +125,7 @@ public class UserDeviceRestController {
 
 	/*GET DEVICE IPCONFIG FROM STORE'S COMPUTER*/
 	@RequestMapping(value = "devices/ipconfig", method = RequestMethod.GET)
-	public ResponseEntity<?> getIpconfigData() {
+	public ResponseEntity<?> getIpconfigDataFile() {
 		DeviceIpconfig deviceIP = (DeviceIpconfig) deviceIpconfigService.readObjectData();
 		if (deviceIP != null)
 			return new ResponseEntity<>(deviceIP, HttpStatus.OK);
@@ -134,7 +135,7 @@ public class UserDeviceRestController {
 
 	/*GET DEVICE INFORMATION FROM STORE'S COMPUTER*/
 	@RequestMapping(value = "devices/information", method = RequestMethod.GET)
-	public ResponseEntity<?> getInformationData() {
+	public ResponseEntity<?> getInformationDataFile() {
 		DeviceInformation deviceInfo = (DeviceInformation) deviceInformationService.readObjectData();
 		if (deviceInfo != null)
 			return new ResponseEntity<>(deviceInfo, HttpStatus.OK);
@@ -144,7 +145,7 @@ public class UserDeviceRestController {
 
 	/*-------------GET AND WRITE DEVICE INFORMATION----------------------*/
 	@RequestMapping(value = "devices/{ip}/information", method = RequestMethod.GET)
-	public ResponseEntity<?> getDevicesInformation(@PathVariable String ip) throws IOException {
+	public ResponseEntity<?> getDeviceInformation(@PathVariable String ip) throws IOException {
 		DeviceInformation deviceInfo = (DeviceInformation) deviceInformationService.processURLData(ip);
 		if (deviceInfo != null) {
 			deviceInformationService.writeObjectData(deviceInfo);
@@ -157,7 +158,7 @@ public class UserDeviceRestController {
 	
 	/*---------------GET AND WRITE DEVICE IPCONFIG-------------------------*/
 	@RequestMapping(value = "devices/{ip}/ipconfig", method = RequestMethod.GET)
-	public ResponseEntity<?> getDevicesIpconfig(@PathVariable String ip) {
+	public ResponseEntity<?> getDeviceIpconfig(@PathVariable String ip) {
 		DeviceIpconfig deviceIp = (DeviceIpconfig) deviceIpconfigService.processURLData(ip);
 		if (deviceIp != null) {
 			deviceIpconfigService.writeObjectData(ip);
@@ -170,7 +171,8 @@ public class UserDeviceRestController {
 	
 	/*------------------CHECK IP WITH RANGE_EXAMPLE: devices/check-ip/10.220.20.200-255------------*/
 	@RequestMapping(value = "devices/check-ip/{ip}", method = RequestMethod.GET)
-	public ResponseEntity<?> checkIPs(@PathVariable String ip) throws ExecutionException, InterruptedException {
+	public ResponseEntity<?> checkIPs(@PathVariable String ip)
+			throws ExecutionException, InterruptedException {
         deviceInformationService.refreshList();
 		List<DeviceInformation> informationList = deviceInformationService.discoverIP(ip);
 		if (informationList.isEmpty() == false) {
@@ -185,11 +187,13 @@ public class UserDeviceRestController {
 
 	/*GET ALL IP ADDRESS DEVICES*/
 	@RequestMapping(value = "/devices/ips", method = RequestMethod.GET)
-	public ResponseEntity<?> getIPsList() throws ExecutionException, InterruptedException {
-		if (deviceInformationService.findAllIPs().isEmpty() == false)
+	public ResponseEntity<?> getIPsList() {
+		if (deviceInformationService.findAllIPs().isEmpty() == false) {
 			return new ResponseEntity<>(deviceInformationService.createIPList(), HttpStatus.OK);
-		else
+		}
+		else {
 			return new ResponseEntity<>("DEVICE LIST IS EMPTY", HttpStatus.NOT_FOUND);
+		}
 	}
 
 	/*GET FIELDS OF DEVICE INFORMATION*/
